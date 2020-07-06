@@ -1,4 +1,4 @@
-cli
+@devitools/cli
 ===
 
 Command line devitools
@@ -50,7 +50,7 @@ EXAMPLE
   $ devi init
 ```
 
-_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.0.0/src\commands\init.ts)_
+_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/master/src/commands/init.ts)_
 
 ## `devi help [COMMAND]`
 
