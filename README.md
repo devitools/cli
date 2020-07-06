@@ -31,7 +31,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`devi hello [FILE]`](#devi-hello-file)
+* [`devi init`](#devi-init)
 * [`devi help [COMMAND]`](#devi-help-command)
 
 ## `devi init`
