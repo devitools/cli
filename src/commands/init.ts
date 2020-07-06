@@ -5,7 +5,7 @@ import * as Path from 'path'
 import * as FileSystem from 'fs'
 
 export default class Init extends Command {
-  static description = 'Initialize a directory to be recognized as a devitools project'
+  static description = 'initialize a directory to be recognized as a devitools project'
 
   static examples = [
     '$ devi init -m',
@@ -17,6 +17,7 @@ export default class Init extends Command {
   }
 
   async run() {
+    this.log('running command...')
     // cli.action.start('initializing...')
     // cli.action.stop('done')
     const {flags} = this.parse(Init)
