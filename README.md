@@ -15,11 +15,14 @@ Command line devitools
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g cli
+$ npm install -g @devitools/cli
+
 $ devi COMMAND
 running command...
+
 $ devi (-v|--version|version)
-cli/0.0.0 win32-x64 node-v12.18.1
+devi/0.0.0 win32-x64 node-v12.18.1
+
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -37,16 +40,14 @@ describe the command here
 
 ```
 USAGE
-  $ devi hello [FILE]
+  $ devi init
 
 OPTIONS
-  -f, --force
   -h, --help       show CLI help
-  -n, --name=name  name to print
+  -m, --monorepo   initialize a project as a monorepo
 
 EXAMPLE
-  $ devi hello
-  hello world from ./src/hello.ts!
+  $ devi init
 ```
 
 _See code: [src\commands\hello.ts](https://github.com/wilcorrea/cli/blob/v0.0.0/src\commands\hello.ts)_
