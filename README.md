@@ -22,7 +22,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.1.0 win32-x64 node-v12.18.2
+@devitools/cli/0.1.1 win32-x64 node-v12.18.2
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -63,14 +63,15 @@ ARGUMENTS
   DOMAIN  the domain that will be created
 
 OPTIONS
-  -h, --help      show CLI help
+  -h, --help               show CLI help
   -o, --override
+  -t, --template=template  [default: default]
 
 EXAMPLE
   $ devi add foo.bar
 ```
 
-_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.1.0/src\commands\add.ts)_
+_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.1.1/src\commands\add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -129,7 +130,7 @@ EXAMPLE
   $ devi init
 ```
 
-_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.1.0/src\commands\init.ts)_
+_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.1.1/src\commands\init.ts)_
 <!-- commandsstop -->
 * [`devi init`](#devi-init)
 * [`devi help [COMMAND]`](#devi-help-command)
