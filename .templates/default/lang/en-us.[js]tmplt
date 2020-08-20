@@ -1,12 +1,12 @@
 import { SCOPES } from '@devitools/Agnostic/enum'
 
-const namespace = '[[namespace.singular]]'
+const parent = '[[namespace.singular]]'
 const singular = '[[entity.singular]]'
 const plural = '[[entity.plural]]'
 
 export const routes = {
   group: {
-    crumb: `${namespace} / ${plural}`
+    crumb: `${parent} / ${plural}`
   },
   [SCOPES.SCOPE_INDEX]: {
     title: plural
