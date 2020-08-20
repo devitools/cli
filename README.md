@@ -18,11 +18,11 @@ Command line devitools
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g devi
+$ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-devi/0.1.0 win32-x64 node-v12.18.2
+@devitools/cli/0.1.0 win32-x64 node-v12.18.2
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND

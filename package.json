@@ -1,5 +1,5 @@
 {
-    "name": "devi",
+    "name": "@devitools/cli",
     "description": "Command line devitools",
     "version": "0.1.0",
     "author": "William Correa @wilcorrea",
@@ -64,7 +64,7 @@
             "@oclif/plugin-autocomplete"
         ]
     },
-    "repository": "devitools/cli",
+    "repository": "git+https://github.com/devitools/cli",
     "scripts": {
         "postpack": "rimraf oclif.manifest.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",
