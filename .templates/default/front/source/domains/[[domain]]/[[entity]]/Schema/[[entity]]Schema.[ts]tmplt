@@ -1,0 +1,32 @@
+import Schema from '@devitools/Agnostic/Schema'
+
+import Service from './[[entity]]Service'
+import { domain } from '../settings'
+
+/**
+ * @class {[[entity]]Schema}
+ */
+export default class [[entity]]Schema extends Schema {
+  /**
+   * @type {string}
+   */
+  static domain = domain
+
+  /**
+   * @type {Http}
+   */
+  service = Service
+
+  /**
+   */
+  construct () {
+    this.addField('name')
+      .fieldIsInputPlan()
+      .fieldTableShow()
+      .fieldTableWhere()
+      .fieldFormAutofocus()
+      .fieldFormWidth(100)
+      .fieldFormFill('name')
+      .validationRequired()
+  }
+}

@@ -1,0 +1,53 @@
+import { SCOPES } from '@devitools/Agnostic/enum'
+
+export const routes = {
+  group: {
+    crumb: '[[namespace.singular]] / [[entity.plural]]'
+  },
+  [SCOPES.SCOPE_INDEX]: {
+    title: '[[entity.plural]]'
+  },
+  [SCOPES.SCOPE_TRASH]: {
+    title: '[[entity.singular]] Trash',
+    crumb: 'Trash'
+  },
+  [SCOPES.SCOPE_ADD]: {
+    title: 'Create [[entity.singular]]',
+    crumb: 'Create'
+  },
+  [SCOPES.SCOPE_VIEW]: {
+    title: 'View [[entity.singular]]',
+    crumb: 'View'
+  },
+  [SCOPES.SCOPE_EDIT]: {
+    title: 'Edit [[entity.singular]]',
+    crumb: 'Edit'
+  }
+}
+
+export const print = {
+  title: '[[entity.singular]] Impression'
+}
+
+export const fields = {
+  name: {
+    label: 'Name',
+    tooltip: 'The name used to represent the record',
+    placeholder: 'ex: '
+  }
+}
+
+export const validations = {
+  name: {
+    requiredIf: 'Name is required'
+  }
+}
+
+/**
+ */
+export default {
+  routes,
+  print,
+  fields,
+  validations
+}

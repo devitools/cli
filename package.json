@@ -6,18 +6,20 @@
     "bin": {
         "devi": "./bin/run"
     },
-    "bugs": "https://github.com/wilcorrea/cli/issues",
+    "bugs": "https://github.com/devitools/cli/issues",
     "dependencies": {
         "@oclif/command": "^1",
         "@oclif/config": "^1",
         "@oclif/plugin-autocomplete": "^0.2.0",
         "@oclif/plugin-help": "^3",
         "@oclif/plugin-not-found": "^1.2.4",
+        "@types/pluralize": "^0.0.29",
         "axios": "^0.19.2",
         "cli-ux": "^5.4.9",
         "listr": "^0.14.3",
         "node-notifier": "^7.0.1",
         "oclif": "^1.16.1",
+        "pluralize": "^8.0.0",
         "tslib": "^1"
     },
     "devDependencies": {
@@ -48,7 +50,7 @@
         "/npm-shrinkwrap.json",
         "/oclif.manifest.json"
     ],
-    "homepage": "https://github.com/wilcorrea/cli",
+    "homepage": "https://github.com/devitools/cli",
     "keywords": [
         "oclif"
     ],
@@ -62,7 +64,7 @@
             "@oclif/plugin-autocomplete"
         ]
     },
-    "repository": "wilcorrea/cli",
+    "repository": "devitools/cli",
     "scripts": {
         "postpack": "rimraf oclif.manifest.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",

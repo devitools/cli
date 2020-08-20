@@ -2,5 +2,10 @@
   "extends": [
     "oclif",
     "oclif-typescript"
-  ]
+  ],
+
+  // add your custom rules here
+  "rules": {
+    "valid-jsdoc": "off"
+  }
 }
