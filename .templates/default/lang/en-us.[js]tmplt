@@ -1,45 +1,49 @@
 import { SCOPES } from '@devitools/Agnostic/enum'
 
+const namespace = '[[namespace.singular]]'
+const singular = '[[entity.singular]]'
+const plural = '[[entity.plural]]'
+
 export const routes = {
   group: {
-    crumb: '[[namespace.singular]] / [[entity.plural]]'
+    crumb: `${namespace} / ${plural}`
   },
   [SCOPES.SCOPE_INDEX]: {
-    title: '[[entity.plural]]'
+    title: plural
   },
   [SCOPES.SCOPE_TRASH]: {
-    title: '[[entity.singular]] Trash',
+    title: `${plural} Trash`,
     crumb: 'Trash'
   },
   [SCOPES.SCOPE_ADD]: {
-    title: 'Create [[entity.singular]]',
+    title: `Create ${singular}`,
     crumb: 'Create'
   },
   [SCOPES.SCOPE_VIEW]: {
-    title: 'View [[entity.singular]]',
+    title: `View ${singular}`,
     crumb: 'View'
   },
   [SCOPES.SCOPE_EDIT]: {
-    title: 'Edit [[entity.singular]]',
+    title: `Edit ${singular}`,
     crumb: 'Edit'
   }
 }
 
 export const print = {
-  title: '[[entity.singular]] Impression'
+  title: `${singular} Impression`,
 }
 
 export const fields = {
   name: {
-    label: 'Name',
-    tooltip: 'The name used to represent the record',
-    placeholder: 'ex: '
+    label: 'ex.: Name',
+    tooltip: 'ex.: The name used to represent the record',
+    placeholder: 'ex: Type a cool name'
   }
 }
 
 export const validations = {
   name: {
-    requiredIf: 'Name is required'
+    requiredIf: 'ex.: Name is required'
   }
 }
 
