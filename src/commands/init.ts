@@ -1,4 +1,5 @@
 import {Command, flags} from '@oclif/command'
+
 import cli from 'cli-ux'
 import * as notifier from 'node-notifier'
 import * as Path from 'path'
@@ -107,7 +108,8 @@ export default class Init extends Command {
       framework: 'laravel',
       root: await this.folder('Backend root dir', '/laravel'),
       domains: await this.folder('  (Backend) Domains relative path', '/app/Domains'),
-      controller: await this.folder('  (Backend) Settings relative path', '/app/Http/Controllers'),
+      controller: await this.folder('  (Backend) Controller relative path', '/app/Http/Controllers'),
+      migration: await this.folder('  (Backend) Migrations relative path', '/database/migrations'),
     }
 
     await this.finish(devitoolsFile, {lang: [lang], front, back})

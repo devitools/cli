@@ -6,6 +6,7 @@ import {replacement, writeFile} from '../helper'
 import {toCamelCase} from '../helper/string'
 import cli from 'cli-ux'
 import * as pluralize from 'pluralize'
+import * as notifier from 'node-notifier'
 
 /**
  * @class {Add}
@@ -49,6 +50,7 @@ export default class Add extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
     override: flags.boolean({char: 'o'}),
+    template: flags.string({char: 't', default: 'default'}),
   }
 
   /**
@@ -174,7 +176,7 @@ export default class Add extends Command {
       return
     }
 
-    const {args} = this.parse(Add)
+    const {args, flags} = this.parse(Add)
     const fragments = String(args.domain).split('.')
     if (fragments.length <= 1) {
       this.error('The domain is not valid')
@@ -182,7 +184,7 @@ export default class Add extends Command {
       return
     }
 
-    const template = 'default'
+    const template = flags.template
 
     const sourceSettings = {
       front: {
@@ -194,6 +196,7 @@ export default class Add extends Command {
         root: 'back',
         domains: Path.join('Domains'),
         controller: Path.join('Http', 'Controllers'),
+        migration: Path.join('migrations'),
       },
     }
     const sourceFront = Path.join(__dirname, '..', '..', '.templates', template, sourceSettings.front.root)
@@ -215,15 +218,31 @@ export default class Add extends Command {
       .replace(/[\u0300-\u036f]/g, '')
     })
 
+    const lower = domain.map(entry => entry.toLowerCase())
+
+    const collection = await this.input('  Table or collection:', pluralize(entity))
+    const icon = await this.input('  Icon used on the interface:', 'folder')
+
+    const pad = (input: number) => input < 10 ? '0' + input : input
+    const date = new Date()
+    const timestamp = date.getFullYear().toString() + '_' +
+      pad(date.getMonth() + 1) +  '_' +
+      pad(date.getDate()) +  '_' +
+      pad(date.getHours()) +
+      pad(date.getMinutes()) +
+      pad(date.getSeconds())
+
     const replaces = {
       entity: toCamelCase(entity, true),
       'entity.lower': entity.toLowerCase(),
       domain: domain.map(entry => toCamelCase(entry, true)).join('/'),
-      'domain.lower': domain.map(entry => entry.toLowerCase()).join('/'),
-      'domain.dotted': domain.map(entry => entry.toLowerCase()).join('.'),
+      'domain.lower': lower.join('/'),
+      'domain.dotted': lower.join('.'),
       namespace: domain.map(entry => toCamelCase(entry, true)).join('\\'),
-      collection: await this.input('  Table or collection:', pluralize(entity)),
-      icon: await this.input('  Icon used on the interface:', 'folder'),
+      collection,
+      icon,
+      'migration.file': `${timestamp}_${toCamelCase(collection)}-create`,
+      'migration.class': `${toCamelCase(collection)}Create`,
     }
 
     await this.generate(
@@ -247,6 +266,11 @@ export default class Add extends Command {
       Path.join(targetBack, targetSettings.back.controller),
       replaces
     )
+    await this.generate(
+      Path.join(sourceBack, sourceSettings.back.migration),
+      Path.join(targetBack, targetSettings.back.migration),
+      replaces
+    )
 
     await this.generate(
       Path.join(__dirname, '..', '..', '.templates', template, 'lang'),
@@ -256,5 +280,12 @@ export default class Add extends Command {
     )
 
     this.log('Domain created successfully\n')
+
+    notifier.notify({
+      title: 'Devitools',
+      message: 'Domain created successfully!',
+      icon: Path.join(__dirname, '..', '..', 'assets', 'logo.png'),
+      wait: false,
+    })
   }
 }
