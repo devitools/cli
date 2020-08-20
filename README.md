@@ -12,8 +12,23 @@ Command line devitools
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 # Usage
 <!-- usage -->
+```sh-session
+$ npm install -g devi
+$ devi COMMAND
+running command...
+$ devi (-v|--version|version)
+devi/0.1.0 win32-x64 node-v12.18.2
+$ devi --help [COMMAND]
+USAGE
+  $ devi COMMAND
+...
+```
+<!-- usagestop -->
 ```sh-session
 $ npm install -g @devitools/cli
 
@@ -31,6 +46,91 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`devi add DOMAIN`](#devi-add-domain)
+* [`devi autocomplete [SHELL]`](#devi-autocomplete-shell)
+* [`devi help [COMMAND]`](#devi-help-command)
+* [`devi init`](#devi-init)
+
+## `devi add DOMAIN`
+
+initialize a directory to be recognized as a devitools project
+
+```
+USAGE
+  $ devi add DOMAIN
+
+ARGUMENTS
+  DOMAIN  the domain that will be created
+
+OPTIONS
+  -h, --help      show CLI help
+  -o, --override
+
+EXAMPLE
+  $ devi add foo.bar
+```
+
+_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.1.0/src\commands\add.ts)_
+
+## `devi autocomplete [SHELL]`
+
+display autocomplete installation instructions
+
+```
+USAGE
+  $ devi autocomplete [SHELL]
+
+ARGUMENTS
+  SHELL  shell type
+
+OPTIONS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+EXAMPLES
+  $ devi autocomplete
+  $ devi autocomplete bash
+  $ devi autocomplete zsh
+  $ devi autocomplete --refresh-cache
+```
+
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.2.0/src\commands\autocomplete\index.ts)_
+
+## `devi help [COMMAND]`
+
+display help for devi
+
+```
+USAGE
+  $ devi help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.1.0/src\commands\help.ts)_
+
+## `devi init`
+
+initialize a directory to be recognized as a devitools project
+
+```
+USAGE
+  $ devi init
+
+OPTIONS
+  -b, --back
+  -f, --front
+  -h, --help   show CLI help
+
+EXAMPLE
+  $ devi init
+```
+
+_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.1.0/src\commands\init.ts)_
+<!-- commandsstop -->
 * [`devi init`](#devi-init)
 * [`devi help [COMMAND]`](#devi-help-command)
 
