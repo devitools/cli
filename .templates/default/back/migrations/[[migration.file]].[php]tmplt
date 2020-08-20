@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use DeviTools\Database\Migration\TableCreate;
-use DeviTools\Database\Table;
+use Devitools\Database\Migration\TableCreate;
+use Devitools\Database\Table;
 
 /**
  * Class [[migration.class]]
