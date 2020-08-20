@@ -254,7 +254,6 @@ export default class Add extends Command {
       replaces,
       targetSettings.lang.map((lang: string) => new RegExp(`${lang}.*`))
     )
-    // targetSettings.lang,
 
     this.log('Domain created successfully\n')
   }

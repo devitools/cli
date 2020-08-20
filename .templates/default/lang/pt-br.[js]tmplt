@@ -30,7 +30,7 @@ export const routes = {
 }
 
 export const print = {
-  title: `Imprimir ${singular}`,
+  title: `Imprimir ${singular}`
 }
 
 export const fields = {
