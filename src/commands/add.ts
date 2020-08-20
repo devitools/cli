@@ -250,7 +250,7 @@ export default class Add extends Command {
 
     await this.generate(
       Path.join(__dirname, '..', '..', '.templates', template, 'lang'),
-      Path.join(targetFront, targetSettings.front.domains, ...replaces.domain, replaces.entity),
+      Path.join(targetFront, targetSettings.front.domains, replaces.domain, replaces.entity),
       replaces,
       targetSettings.lang.map((lang: string) => new RegExp(`${lang}.*`))
     )
