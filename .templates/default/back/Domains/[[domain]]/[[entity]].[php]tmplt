@@ -28,7 +28,7 @@ class [[entity]] extends Schema
      */
     public function domain(): string
     {
-        return '[[domain.dotted]].[[entity]]';
+        return '[[domain.dotted]].[[entity.lower]]';
     }
 
     /**
