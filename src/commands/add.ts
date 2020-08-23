@@ -2,11 +2,8 @@ import {flags} from '@oclif/command'
 
 import * as Path from 'path'
 import * as FileSystem from 'fs'
-import * as pluralize from 'pluralize'
 
 import Base from '../helper/base'
-import {replacePath, replaceExtension, replaceTemplate, writeFile} from '../helper/util'
-import {toCamelCase} from '../helper/string'
 
 /**
  * @class {Add}
@@ -110,17 +107,17 @@ export default class Add extends Base {
       const origin = file.replace(source, '')
       return {
         source: origin,
-        target: replaceExtension(String(replacePath(origin, replaces))),
+        target: this.replaceExtension(String(this.replacePath(origin, replaces))),
       }
     })
 
     for (const entry of map) {
       const content = String(FileSystem.readFileSync(Path.join(source, entry.source)))
-      const file = replaceTemplate(content, replaces)
+      const file = this.replaceTemplate(content, replaces)
       const filename = Path.join(target, entry.target)
 
       if (flags.override) {
-        writeFile(Path.join(target, entry.target), file)
+        this.writeFile(Path.join(target, entry.target), file)
         continue
       }
 
@@ -140,24 +137,8 @@ export default class Add extends Base {
           continue
         }
       }
-      writeFile(Path.join(target, entry.target), file)
+      this.writeFile(Path.join(target, entry.target), file)
     }
-  }
-
-  /**
-   * @param input
-   */
-  pluralize(input: string): string {
-    return pluralize(input)
-  }
-
-  /**
-   * @param {string} input
-   * @param {boolean} [first]
-   * @return {string}
-   */
-  toCamelCase(input: string, first = false): string {
-    return toCamelCase(input, first)
   }
 
   /**
