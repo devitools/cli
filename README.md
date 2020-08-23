@@ -22,7 +22,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.1.1 win32-x64 node-v12.18.2
+@devitools/cli/0.2.0 win32-x64 node-v12.18.2
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -65,13 +65,15 @@ ARGUMENTS
 OPTIONS
   -h, --help               show CLI help
   -o, --override
-  -t, --template=template  [default: default]
+  -t, --template=template
 
-EXAMPLE
+EXAMPLES
   $ devi add foo.bar
+  $ devi add foo.bar --override | devi add foo.bar --o
+  $ devi add foo.bar --template=my-template | devi add foo.bar -t=my-template
 ```
 
-_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.1.1/src\commands\add.ts)_
+_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.2.0/src\commands\add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -115,7 +117,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.1.0
 
 ## `devi init`
 
-initialize a directory to be recognized as a devitools project
+Initialize a directory to be recognized as a devitools project
 
 ```
 USAGE
@@ -126,11 +128,13 @@ OPTIONS
   -f, --front
   -h, --help   show CLI help
 
-EXAMPLE
+EXAMPLES
   $ devi init
+  $ devi init -s
+  $ devi init -b
 ```
 
-_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.1.1/src\commands\init.ts)_
+_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.2.0/src\commands\init.ts)_
 <!-- commandsstop -->
 * [`devi init`](#devi-init)
 * [`devi help [COMMAND]`](#devi-help-command)
