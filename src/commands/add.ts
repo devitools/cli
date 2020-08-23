@@ -165,7 +165,7 @@ export default class Add extends Base {
       return
     }
 
-    const template = target.template || flags.template || 'default'
+    const template = flags.template || target.template || 'default'
 
     const entity = String(fragments.pop())
     .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>{}[]\/]/gi, '')
