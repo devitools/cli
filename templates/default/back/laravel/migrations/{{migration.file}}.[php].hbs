@@ -1,4 +1,4 @@
-<?php
+#php
 
 declare(strict_types=1);
 
@@ -6,16 +6,16 @@ use Devitools\Database\Migration\TableCreate;
 use Devitools\Database\Table;
 
 /**
- * Class {{migration.class}}
+ * Class {{[migration.class]}}
  */
-class {{migration.class}} extends TableCreate
+class {{[migration.class]}} extends TableCreate
 {
     /**
      * @return string
      */
     protected function table(): string
     {
-        return '{{entity.collection}}';
+        return '{{[entity.collection]}}';
     }
 
     /**
@@ -28,10 +28,10 @@ class {{migration.class}} extends TableCreate
 
         /*
         // Add relationship example
-        $table->efficientUuid('<foreignKey>');
-        $table->foreign('<foreignKey>')
+        $table->efficientUuid('[[foreignKey]]');
+        $table->foreign('[[foreignKey]]')
             ->references('uuid')
-            ->on('<foreignTable>')
+            ->on('[[foreignTable]]')
             ->onDelete('cascade');
         */
     }

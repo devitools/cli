@@ -1,4 +1,4 @@
-<?php
+#php
 
 declare(strict_types=1);
 
@@ -20,7 +20,7 @@ class {{entity}} extends Schema
      */
     public static function resource(): string
     {
-        return '{{entity.collection}}';
+        return '{{[entity.collection]}}';
     }
 
     /**
@@ -28,7 +28,7 @@ class {{entity}} extends Schema
      */
     public function domain(): string
     {
-        return '{{domain.dotted}}.{{entity.lower}}';
+        return '{{[domain.dotted]}}.{{[entity.lower]}}';
     }
 
     /**

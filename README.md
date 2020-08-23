@@ -8,13 +8,54 @@ Command line devitools
 [![Downloads/week](https://img.shields.io/npm/dw/cli.svg)](https://npmjs.org/package/cli)
 [![License](https://img.shields.io/npm/l/cli.svg)](https://github.com/devitools/cli/blob/master/package.json)
 
+<div align="center">
+  <img alt="Devitools logo" src="https://devi.tools/images/logo-horizontal.png" />
+</div>
+<br>
+<br>
+
+
+<p align="center">
+  <a href="#" style="text-decoration: none">
+    <img alt="License" src="https://img.shields.io/github/license/devitools/cli?color=34CB79" />
+  </a>
+  <a href="https://github.com/devitools/cli/issues" style="text-decoration: none" target="_blank">
+    <img alt="Issues" src="https://img.shields.io/github/issues/devitools/cli?color=34CB79" />
+  </a>
+    <a href="https://github.com/devitools/cli/graphs/contributors" style="text-decoration: none" target="_blank">
+    <img src="https://img.shields.io/github/contributors/devitools/cli?color=34CB79" />
+  </a>
+  <a href="#" style="text-decoration: none">
+    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/devitools/cli?color=34CB79" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/devitools/cli/stargazers" style="text-decoration: none" target="_blank">
+    <img alt="Github Stars" src="https://img.shields.io/github/stars/devitools/cli?style=social" />
+  </a>
+  <a href="https://github.com/devitools/cli/network/members" style="text-decoration: none" target="_blank">
+    <img alt="Github Forks" src="https://img.shields.io/github/forks/devitools/cli?style=social" />
+  </a>
+  <a href="https://twitter.com/devitools" style="text-decoration: none" target="_blank">
+    <img alt="Twitter" src="https://img.shields.io/twitter/follow/devitools?label=Twitter&style=social" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/devitools/cli/tags" style="text-decoration: none" target="_blank">
+    <img alt="Github Tags" src="https://img.shields.io/github/v/tag/devitools/cli.svg?logo=github" />
+  </a>
+  <a href="https://github.com/devitools/cli/releases" style="text-decoration: none" target="_blank">
+    <img alt="Github Releases" src="https://img.shields.io/github/last-commit/devitools/cli.svg?label=Updated&logo=github&maxAge=600" />
+  </a>
+</p>
+
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
+
 # Usage
 <!-- usage -->
 ```sh-session
@@ -29,21 +70,7 @@ USAGE
 ...
 ```
 <!-- usagestop -->
-```sh-session
-$ npm install -g @devitools/cli
 
-$ devi COMMAND
-running command...
-
-$ devi (-v|--version|version)
-devi/0.0.0 win32-x64 node-v12.18.1
-
-$ devi --help [COMMAND]
-USAGE
-  $ devi COMMAND
-...
-```
-<!-- usagestop -->
 # Commands
 <!-- commands -->
 * [`devi add DOMAIN`](#devi-add-domain)

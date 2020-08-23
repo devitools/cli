@@ -78,7 +78,7 @@ module.exports = async function (command, target, entity, domain, parameters) {
   }
 
   if (target.back.type) {
-    const backType = target.front.type
+    const backType = target.back.type
     const templateBack = Path.join(__dirname, templateSettings.back.root, backType)
     const targetBack = Path.join(process.cwd(), target.back.root)
 
