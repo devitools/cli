@@ -5,8 +5,9 @@ const Path = require('path')
  * @param target
  * @param entity
  * @param domain
+ * @param parameters
  */
-module.exports = async function (command, target, entity, domain) {
+module.exports = async function (command, target, entity, domain, parameters) {
   const templateSettings = {
     front: {
       type: ['quasar'], // ['quasar', 'vuetify', 'material-ui']
@@ -45,6 +46,7 @@ module.exports = async function (command, target, entity, domain) {
     'entity.collection': '',
     'migration.file': '',
     'migration.class': '',
+    parameters,
   }
 
   if (target.front.type) {
@@ -54,10 +56,12 @@ module.exports = async function (command, target, entity, domain) {
 
     replaces['entity.icon'] = await command.prompt('  Icon used on the interface', 'folder')
 
+    const filter = (parameters.builtin || parameters.array) ? [new RegExp('({{entity}}Schema|settings).*')] : []
     await command.generate(
       Path.join(templateFront, templateSettings.front.domains),
       Path.join(targetFront, target.front.domains),
-      replaces
+      replaces,
+      filter
     )
     await command.generate(
       Path.join(templateFront, templateSettings.front.views),

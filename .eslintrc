@@ -6,6 +6,7 @@
 
   // add your custom rules here
   "rules": {
-    "valid-jsdoc": "off"
+    "valid-jsdoc": "off",
+    "max-params": "off"
   }
 }

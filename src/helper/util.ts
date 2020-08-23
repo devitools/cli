@@ -1,5 +1,6 @@
 import * as Path from 'path'
 import * as FileSystem from 'fs'
+import * as Handlebars from 'handlebars'
 
 /**
  * @param {number} timeout
@@ -10,12 +11,36 @@ export function sleep(timeout: number) {
 }
 
 /**
- * @param {string} template
- * @param {Record<string, unknown> | string[]} replaces
- * @param {Function} [regex]
+ * @param {string} string
+ * @param {Record<string, any>} replaces
  * @returns {string}
  */
-export const replacement = (template: string, replaces: Record<string, unknown> | string[], regex?: Function) => {
+export const replaceTemplate = (string: string, replaces: Record<string, unknown> | string[]) => {
+  const template = Handlebars.compile(string)
+  return template(replaces)
+}
+
+/**
+ * @param file
+ */
+export const replaceExtension = (file: string) => {
+  const pieces = file.split('.')
+  // remove the old extension
+  pieces.pop()
+  // get the extension inside []
+  const extension = String(pieces.pop()).replace('[', '').replace(']', '')
+  // put the extension on array
+  pieces.push(extension)
+  return pieces.join('.')
+}
+
+/**
+ * @param {string} template
+ * @param {Record<string, any>} replaces
+ * @param {Function} regex
+ * @returns {string}
+ */
+export const replacePath = (template: string, replaces: Record<string, unknown> | string[], regex?: Function) => {
   const string = String(template)
   let keyFy: Function = (expression: string) => new RegExp(`{{${expression}}}`, 'g')
   if (regex) {
@@ -38,8 +63,6 @@ export const replacement = (template: string, replaces: Record<string, unknown> 
       string
     )
   }
-
-  return template
 }
 
 /**

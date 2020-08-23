@@ -5,7 +5,7 @@ import * as FileSystem from 'fs'
 import * as pluralize from 'pluralize'
 
 import Base from '../helper/base'
-import {replacement, writeFile} from '../helper/util'
+import {replacePath, replaceExtension, replaceTemplate, writeFile} from '../helper/util'
 import {toCamelCase} from '../helper/string'
 
 /**
@@ -53,6 +53,7 @@ export default class Add extends Base {
     help: flags.help({char: 'h'}),
     override: flags.boolean({char: 'o'}),
     template: flags.string({char: 't'}),
+    parameters: flags.string({char: 'p'}),
   }
 
   /**
@@ -95,17 +96,6 @@ export default class Add extends Base {
     return getFilesRecursively(dir)
   }
 
-  replaceExtension = (file: string) => {
-    const pieces = file.split('.')
-    // noinspection SpellCheckingInspection
-    const extension = String(pieces.pop())
-    .replace('tmplt', '')
-    .replace('[', '')
-    .replace(']', '')
-    pieces.push(extension)
-    return pieces.join('.')
-  }
-
   /**
    * @param {string} source
    * @param {string} target
@@ -120,13 +110,13 @@ export default class Add extends Base {
       const origin = file.replace(source, '')
       return {
         source: origin,
-        target: this.replaceExtension(replacement(origin, replaces)),
+        target: replaceExtension(String(replacePath(origin, replaces))),
       }
     })
 
     for (const entry of map) {
       const content = String(FileSystem.readFileSync(Path.join(source, entry.source)))
-      const file = replacement(content, replaces)
+      const file = replaceTemplate(content, replaces)
       const filename = Path.join(target, entry.target)
 
       if (flags.override) {
@@ -234,6 +224,25 @@ export default class Add extends Base {
       return
     }
 
-    runner(this, target, entity, domain)
+    let parameters: Record<string, any> = {}
+    if (flags.parameters) {
+      const input = flags.parameters
+      try {
+        parameters = JSON.parse(input)
+      } catch (error) {
+        const pieces = String(input).split('.')
+        for (const piece of pieces) {
+          const fragments = piece.split('=')
+          if (fragments.length > 1) {
+            const [key, value] = fragments
+            parameters[key] = value === 'false' ? false : value
+            continue
+          }
+          parameters[piece] = true
+        }
+      }
+    }
+
+    runner(this, target, entity, domain, parameters)
   }
 }
