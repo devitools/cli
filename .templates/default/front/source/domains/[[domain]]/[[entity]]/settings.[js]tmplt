@@ -1,5 +1,0 @@
-/** @type {string} */
-export const domain = '[[domain.dotted]].[[entity.lower]]'
-
-/** @type {string} */
-export const resource = '/[[domain.lower]]/[[entity.lower]]'

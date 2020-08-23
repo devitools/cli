@@ -1,17 +1,17 @@
-import {Command, flags} from '@oclif/command'
+import {flags} from '@oclif/command'
 
 import * as Path from 'path'
 import * as FileSystem from 'fs'
-import {replacement, writeFile} from '../helper'
-import {toCamelCase} from '../helper/string'
-import cli from 'cli-ux'
 import * as pluralize from 'pluralize'
-import * as notifier from 'node-notifier'
+
+import Base from '../helper/base'
+import {replacement, writeFile} from '../helper/util'
+import {toCamelCase} from '../helper/string'
 
 /**
  * @class {Add}
  */
-export default class Add extends Command {
+export default class Add extends Base {
   /**
    * @type {string}
    */
@@ -22,6 +22,8 @@ export default class Add extends Command {
    */
   static examples = [
     '$ devi add foo.bar',
+    '$ devi add foo.bar --override | devi add foo.bar --o',
+    '$ devi add foo.bar --template=my-template | devi add foo.bar -t=my-template',
   ]
 
   /**
@@ -50,7 +52,7 @@ export default class Add extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
     override: flags.boolean({char: 'o'}),
-    template: flags.string({char: 't', default: 'default'}),
+    template: flags.string({char: 't'}),
   }
 
   /**
@@ -143,7 +145,7 @@ export default class Add extends Command {
 
       if (exists) {
         // eslint-disable-next-line no-await-in-loop
-        const answer = await this.input(`  File '${entry.target}' already exists. Override?`, 'y')
+        const answer = await this.prompt(`  File '${entry.target}' already exists. Override?`, 'y')
         if (answer !== 'y') {
           continue
         }
@@ -153,19 +155,25 @@ export default class Add extends Command {
   }
 
   /**
-   * @param {string} message
-   * @param {string} fallback
-   *
+   * @param input
+   */
+  pluralize(input: string): string {
+    return pluralize(input)
+  }
+
+  /**
+   * @param {string} input
+   * @param {boolean} [first]
    * @return {string}
    */
-  async input(message: string, fallback: string) {
-    return await cli.prompt(`${message} [${fallback}]`, {required: false}) || fallback
+  toCamelCase(input: string, first = false): string {
+    return toCamelCase(input, first)
   }
 
   /**
    */
   async run() {
-    this.log('running command...')
+    await this.welcome()
 
     const devitoolsFile = Path.join(process.cwd(), '.devitools.json')
     try {
@@ -175,6 +183,8 @@ export default class Add extends Command {
       this.exit(2)
       return
     }
+    const content = FileSystem.readFileSync(devitoolsFile)
+    const target = JSON.parse(String(content))
 
     const {args, flags} = this.parse(Add)
     const fragments = String(args.domain).split('.')
@@ -184,33 +194,13 @@ export default class Add extends Command {
       return
     }
 
-    const template = flags.template
-
-    const sourceSettings = {
-      front: {
-        root: 'front',
-        domains: Path.join('source', 'domains'),
-        views: Path.join('resources', 'views'),
-      },
-      back: {
-        root: 'back',
-        domains: Path.join('Domains'),
-        controller: Path.join('Http', 'Controllers'),
-        migration: Path.join('migrations'),
-      },
-    }
-    const sourceFront = Path.join(__dirname, '..', '..', '.templates', template, sourceSettings.front.root)
-    const sourceBack = Path.join(__dirname, '..', '..', '.templates', template, sourceSettings.back.root)
-
-    const content = FileSystem.readFileSync(devitoolsFile)
-    const targetSettings = JSON.parse(String(content))
-    const targetFront = Path.join(process.cwd(), targetSettings.front.root)
-    const targetBack = Path.join(process.cwd(), targetSettings.back.root)
+    const template = target.template || flags.template || 'default'
 
     const entity = String(fragments.pop())
     .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>{}[]\/]/gi, '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+
     const domain = fragments.map(fragment => {
       return fragment
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>{}[]\/]/gi, '')
@@ -218,74 +208,32 @@ export default class Add extends Command {
       .replace(/[\u0300-\u036f]/g, '')
     })
 
-    const lower = domain.map(entry => entry.toLowerCase())
+    const project = Path.join(process.cwd(), '.devitools', 'templates', template, 'add.js')
+    const bundled = Path.join(__dirname, '..', '..', 'templates', template, 'add.js')
 
-    const collection = await this.input('  Table or collection:', pluralize(entity))
-    const icon = await this.input('  Icon used on the interface:', 'folder')
-
-    const pad = (input: number) => input < 10 ? '0' + input : input
-    const date = new Date()
-    const timestamp = date.getFullYear().toString() + '_' +
-      pad(date.getMonth() + 1) +  '_' +
-      pad(date.getDate()) +  '_' +
-      pad(date.getHours()) +
-      pad(date.getMinutes()) +
-      pad(date.getSeconds())
-
-    const replaces = {
-      entity: toCamelCase(entity, true),
-      'entity.lower': entity.toLowerCase(),
-      domain: domain.map(entry => toCamelCase(entry, true)).join('/'),
-      'domain.lower': lower.join('/'),
-      'domain.dotted': lower.join('.'),
-      namespace: domain.map(entry => toCamelCase(entry, true)).join('\\'),
-      collection,
-      icon,
-      'migration.file': `${timestamp}_${toCamelCase(collection)}-create`,
-      'migration.class': `${toCamelCase(collection)}Create`,
+    let runner
+    try {
+      runner = require(project)
+      this.log(`Template '${template}' loaded from project`)
+    } catch (error) {
+      // silent is gold
     }
 
-    await this.generate(
-      Path.join(sourceFront, sourceSettings.front.domains),
-      Path.join(targetFront, targetSettings.front.domains),
-      replaces
-    )
-    await this.generate(
-      Path.join(sourceFront, sourceSettings.front.views),
-      Path.join(targetFront, targetSettings.front.views),
-      replaces
-    )
+    if (!runner) {
+      try {
+        runner = require(bundled)
+        this.log(`Template '${template}' loaded from bundled`)
+      } catch (error) {
+        // silent is gold
+      }
+    }
 
-    await this.generate(
-      Path.join(sourceBack, sourceSettings.back.domains),
-      Path.join(targetBack, targetSettings.back.domains),
-      replaces
-    )
-    await this.generate(
-      Path.join(sourceBack, sourceSettings.back.controller),
-      Path.join(targetBack, targetSettings.back.controller),
-      replaces
-    )
-    await this.generate(
-      Path.join(sourceBack, sourceSettings.back.migration),
-      Path.join(targetBack, targetSettings.back.migration),
-      replaces
-    )
+    if (!runner) {
+      this.log(JSON.stringify({bundled, project}, null, 2))
+      this.error(`Template '${template}' not found`)
+      return
+    }
 
-    await this.generate(
-      Path.join(__dirname, '..', '..', '.templates', template, 'lang'),
-      Path.join(targetFront, targetSettings.front.domains, replaces.domain, replaces.entity),
-      replaces,
-      targetSettings.lang.map((lang: string) => new RegExp(`${lang}.*`))
-    )
-
-    this.log('Domain created successfully\n')
-
-    notifier.notify({
-      title: 'Devitools',
-      message: 'Domain created successfully!',
-      icon: Path.join(__dirname, '..', '..', 'assets', 'logo.png'),
-      wait: false,
-    })
+    runner(this, target, entity, domain)
   }
 }

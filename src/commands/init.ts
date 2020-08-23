@@ -1,26 +1,28 @@
-import {Command, flags} from '@oclif/command'
+import {flags} from '@oclif/command'
 
 import cli from 'cli-ux'
-import * as notifier from 'node-notifier'
+import * as inquirer from 'inquirer'
 import * as Path from 'path'
 import * as FileSystem from 'fs'
+
+import Base from '../helper/base'
 
 /**
  * @class {Init}
  */
-export default class Init extends Command {
+export default class Init extends Base {
   /**
    * @type {string}
    */
-  static description = 'initialize a directory to be recognized as a devitools project'
+  static description = 'Initialize a directory to be recognized as a devitools project'
 
   /**
    * @type {string}
    */
   static examples = [
     '$ devi init',
-    // '$ devi init -s',
-    // '$ devi init -b',
+    '$ devi init -s',
+    '$ devi init -b',
   ]
 
   /**
@@ -33,43 +35,50 @@ export default class Init extends Command {
   }
 
   /**
-   * @param {string} file
-   * @param {Record<string, any>} data
+   * @param {string} fallback
    */
-  async finish(file: string, data: Record<string, unknown>) {
-    this.warn('The json will be created')
+  async front(fallback = '/frontend') {
+    const responses: any = await inquirer.prompt([{
+      name: 'type',
+      message: 'Select [frontend] language/framework',
+      type: 'list',
+      choices: [{name: 'quasar'}, {name: 'vuetify'}, {name: 'material-ui'}],
+    }])
 
-    const json = JSON.stringify(data, null, 2)
-
-    this.log(json)
-    await cli.anykey()
-
-    FileSystem.writeFileSync(file, json)
-
-    this.log('Project initialized successfully\n')
-
-    notifier.notify({
-      title: 'Devitools',
-      message: 'Project initialized successfully!',
-      icon: Path.join(__dirname, '..', '..', 'assets', 'logo.png'),
-      wait: false,
-    })
+    return {
+      type: responses.type,
+      root: await this.prompt('Frontend root dir', fallback),
+      domains: await this.prompt('  (Frontend) Domains relative path', '/source/domains'),
+      views: await this.prompt('  (Frontend) Views relative path', '/resources/views/dashboard'),
+    }
   }
 
   /**
-   * @param {string} message
    * @param {string} fallback
-   *
-   * @return {string}
    */
-  async folder(message: string, fallback: string) {
-    return await cli.prompt(`${message}: [${fallback}]`, {required: false}) || fallback
+  async back(fallback = '/backend') {
+    const responses: any = await inquirer.prompt([{
+      name: 'type',
+      message: 'Select [backend] language/framework',
+      type: 'list',
+      choices: [
+        {name: 'laravel'}, {name: 'symfony'},
+      ],
+    }])
+
+    return {
+      type: responses.type,
+      root: await this.prompt('Backend root dir', fallback),
+      domains: await this.prompt('  (Backend) Domains relative path', '/app/Domains'),
+      controller: await this.prompt('  (Backend) Controller relative path', '/app/Http/Controllers'),
+      migration: await this.prompt('  (Backend) Migrations relative path', '/database/migrations'),
+    }
   }
 
   /**
    */
   async run() {
-    this.log('running command...')
+    await this.welcome()
 
     const {flags} = this.parse(Init)
 
@@ -83,35 +92,45 @@ export default class Init extends Command {
       // silent
     }
 
-    if (flags.front) {
-      await this.finish(devitoolsFile, {})
-      return
+    const lang = await this.prompt('Default project language', 'en-us')
+    const template = await this.prompt('Default project template', 'default')
+
+    let front = {
+      type: null,
+      root: '',
+      domains: '',
+      views: '',
     }
 
-    if (flags.back) {
-      await this.finish(devitoolsFile, {})
-      return
+    let back = {
+      type: null,
+      root: '',
+      domains: '',
+      controller: '',
+      migration: '',
     }
 
-    const lang = await this.folder('Default project language', 'en-us')
+    const both = !flags.front && !flags.front
 
-    const front = {
-      framework: 'quasar',
-      root: await this.folder('Frontend root dir', '/quasar'),
-      domains: await this.folder('  (Frontend) Domains relative path', '/source/domains'),
-      views: await this.folder('  (Frontend) Views relative path', '/resources/views/dashboard'),
-      // lang: await this.folder('  (Frontend) Lang relative path', '/resources/lang'),
-      // settings: await this.folder('  (Frontend) Settings relative path', `${front}src/settings`),
+    if (both) {
+      front = await this.front()
+      back = await this.back()
+    } else if (flags.front) {
+      front = await this.front('/')
+    } else if (flags.back) {
+      back = await this.back('/')
     }
 
-    const back = {
-      framework: 'laravel',
-      root: await this.folder('Backend root dir', '/laravel'),
-      domains: await this.folder('  (Backend) Domains relative path', '/app/Domains'),
-      controller: await this.folder('  (Backend) Controller relative path', '/app/Http/Controllers'),
-      migration: await this.folder('  (Backend) Migrations relative path', '/database/migrations'),
-    }
+    this.warn('The json will be created')
 
-    await this.finish(devitoolsFile, {lang: [lang], front, back})
+    const json = JSON.stringify({lang: [lang], template, front, back}, null, 2)
+
+    this.log(json)
+    await cli.anykey()
+
+    FileSystem.writeFileSync(devitoolsFile, json)
+
+    this.log('Project initialized successfully\n')
+    this.notify('Project initialized successfully')
   }
 }
