@@ -63,7 +63,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.5.1 win32-x64 node-v12.18.2
+@devitools/cli/0.5.2 win32-x64 node-v12.18.2
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -101,7 +101,7 @@ EXAMPLES
   $ devi add foo.bar --template=my-template | devi add foo.bar -t=my-template
 ```
 
-_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.5.1/src\commands\add.ts)_
+_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.5.2/src\commands\add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -162,5 +162,5 @@ EXAMPLES
   $ devi init -b
 ```
 
-_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.5.1/src\commands\init.ts)_
+_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.5.2/src\commands\init.ts)_
 <!-- commandsstop -->
