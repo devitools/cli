@@ -20,4 +20,12 @@ class {{entity}}Repository extends AbstractRepository
      * @var string
      */
     protected string $prototype = {{entity}}::class;
+
+    /**
+     * @return array
+     */
+    public function getFilterable(): array
+    {
+        return ['id', 'name'];
+    }
 }

@@ -41,4 +41,15 @@ class {{entity}} extends Schema
         $this->addField('name')
             ->validationRequired();
     }
+
+    /**
+     * @return array
+     */
+    public function sorter(): array
+    {
+        if (config('app.counter')) {
+            return ['counter' => 'DESC'];
+        }
+        return [static::CREATED_AT => 'DESC'];
+    }
 }
