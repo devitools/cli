@@ -21,8 +21,8 @@ export default class Init extends Base {
    */
   static examples = [
     '$ devi init',
-    '$ devi init -s',
-    '$ devi init -b',
+    '$ devi init -s // init a project with just frontend',
+    '$ devi init -b // init a project with just backend',
   ]
 
   /**
@@ -50,6 +50,7 @@ export default class Init extends Base {
       root: await this.prompt('Frontend root dir', fallback),
       domains: await this.prompt('  (Frontend) Domains relative path', '/source/domains'),
       views: await this.prompt('  (Frontend) Views relative path', '/resources/views/dashboard'),
+      i18n: await this.prompt('  (Frontend) I18n relative path', '/resources/lang'),
     }
   }
 
@@ -100,6 +101,7 @@ export default class Init extends Base {
       root: '',
       domains: '',
       views: '',
+      i18n: '',
     }
 
     let back = {

@@ -18,9 +18,18 @@ export default class Add extends Base {
    * @type {string[]}
    */
   static examples = [
-    '$ devi add foo.bar',
-    '$ devi add foo.bar --override | devi add foo.bar --o',
-    '$ devi add foo.bar --template=my-template | devi add foo.bar -t=my-template',
+    '$ devi add main.category // add a new entity Category namespaced by Main',
+    '$ devi add financial.bank-account // use kebab case',
+    '$ devi add main.company.partners // use dot notation to nested items',
+    '$ devi add foo.bar -o | devi add foo.bar --override // override all without ask',
+    '$ devi add foo.bar -t=my-template // use a custom template (the default value is default)',
+    '$ devi add foo.bar --template=my-template // use a custom template (the default value is default)',
+    '$ devi add foo.bar -p=whatever | devi add foo.bar --parameters=whatever',
+    '* special parameters:',
+    '  - devi add foo.bar -p=array',
+    '  - devi add foo.bar -p=builtin',
+    '* JSON support:',
+    '  - devi add foo.bar -p={"foo":"bar"}',
   ]
 
   /**
@@ -179,8 +188,8 @@ export default class Add extends Base {
       .replace(/[\u0300-\u036f]/g, '')
     })
 
-    const project = Path.join(process.cwd(), '.devitools', 'templates', template, 'add.js')
-    const bundled = Path.join(__dirname, '..', '..', 'templates', template, 'add.js')
+    const project = Path.join(process.cwd(), '.devitools', 'templates', template, 'index.js')
+    const bundled = Path.join(__dirname, '..', '..', 'templates', template, 'index.js')
 
     let runner
     try {
