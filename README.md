@@ -63,7 +63,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.6.2 win32-x64 node-v12.18.4
+@devitools/cli/0.6.3 win32-x64 node-v12.18.4
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -110,7 +110,7 @@ EXAMPLES
      - devi add foo.bar -p={"foo":"bar"}
 ```
 
-_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.6.2/src/commands/add.ts)_
+_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.6.3/src/commands/add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -171,5 +171,5 @@ EXAMPLES
   $ devi init -b // init a project with just backend
 ```
 
-_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.6.2/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.6.3/src/commands/init.ts)_
 <!-- commandsstop -->

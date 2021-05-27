@@ -1,7 +1,7 @@
 {
   "name": "@devitools/cli",
   "description": "Command line devitools",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "author": "William Correa @wilcorrea",
   "bin": {
     "devi": "bin/run"
@@ -25,7 +25,7 @@
     "handlebars": "^4.7.6",
     "inquirer": "^7.3.3",
     "listr": "^0.14.3",
-    "node-notifier": "^7.0.1",
+    "node-notifier": "^8.0.1",
     "oclif": "^1.16.1",
     "pluralize": "^8.0.0",
     "tslib": "^1"
