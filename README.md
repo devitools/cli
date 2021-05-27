@@ -63,7 +63,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.6.0 win32-x64 node-v12.18.4
+@devitools/cli/0.6.1 win32-x64 node-v12.18.4
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -96,12 +96,21 @@ OPTIONS
   -t, --template=template
 
 EXAMPLES
-  $ devi add foo.bar
-  $ devi add foo.bar --override | devi add foo.bar --o
-  $ devi add foo.bar --template=my-template | devi add foo.bar -t=my-template
+  $ devi add main.category // add a new entity Category namespaced by Main
+  $ devi add financial.bank-account // use kebab case
+  $ devi add main.company.partners // use dot notation to nested items
+  $ devi add foo.bar -o | devi add foo.bar --override // override all without ask
+  $ devi add foo.bar -t=my-template // use a custom template (the default value is default)
+  $ devi add foo.bar --template=my-template // use a custom template (the default value is default)
+  $ devi add foo.bar -p=whatever | devi add foo.bar --parameters=whatever
+  * special parameters:
+     - devi add foo.bar -p=array
+     - devi add foo.bar -p=builtin
+  * JSON support:
+     - devi add foo.bar -p={"foo":"bar"}
 ```
 
-_See code: [src\commands\add.ts](https://github.com/devitools/cli/blob/v0.6.0/src\commands\add.ts)_
+_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.6.1/src/commands/add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -124,7 +133,7 @@ EXAMPLES
   $ devi autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.2.0/src\commands\autocomplete\index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.2.1/src/commands/autocomplete/index.ts)_
 
 ## `devi help [COMMAND]`
 
@@ -141,7 +150,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.1.0/src\commands\help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 
 ## `devi init`
 
@@ -162,5 +171,5 @@ EXAMPLES
   $ devi init -b // init a project with just backend
 ```
 
-_See code: [src\commands\init.ts](https://github.com/devitools/cli/blob/v0.6.0/src\commands\init.ts)_
+_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.6.1/src/commands/init.ts)_
 <!-- commandsstop -->
