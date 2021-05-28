@@ -13,5 +13,5 @@ yarn publish
 
 ## 3. push everything (with tags)
 ```
-git push --tags
+git push --all
 ```
