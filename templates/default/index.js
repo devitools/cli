@@ -30,8 +30,8 @@ module.exports = async function (command, target, entity, domain, parameters) {
   const pad = input => input < 10 ? '0' + input : input
   const date = new Date()
   const timestamp = date.getFullYear().toString() + '_' +
-    pad(date.getMonth() + 1) +  '_' +
-    pad(date.getDate()) +  '_' +
+    pad(date.getMonth() + 1) + '_' +
+    pad(date.getDate()) + '_' +
     pad(date.getHours()) +
     pad(date.getMinutes()) +
     pad(date.getSeconds())
@@ -54,7 +54,12 @@ module.exports = async function (command, target, entity, domain, parameters) {
     const templateFront = Path.join(__dirname, templateSettings.front.root, frontType)
     const targetFront = Path.join(process.cwd(), target.front.root)
 
+    const plural = await command.prompt('  Label used on plural names (permissions, menu, breadcrumbs)', '')
+    const singular = await command.prompt('  Label used on singular names (breadcrumbs)', '')
+
     replaces['entity.icon'] = await command.prompt('  Icon used on the interface', 'folder')
+    replaces['entity.plural'] = plural || '[[entity.plural]]'
+    replaces['entity.singular'] = singular || '[[entity.singular]]'
 
     const filter = (parameters.builtin || parameters.array) ? [new RegExp('({{entity}}Schema|settings).*')] : []
     await command.generate(
@@ -80,7 +85,7 @@ module.exports = async function (command, target, entity, domain, parameters) {
     const templateBack = Path.join(__dirname, templateSettings.back.root, backType)
     const targetBack = Path.join(process.cwd(), target.back.root)
 
-    const collection = await command.prompt('  Table or collection:', command.pluralize(entity))
+    const collection = await command.prompt('  Table or collection:', command.pluralize(entity.replace(/[^a-zA-Z0-9]/g, '_')))
 
     replaces['entity.collection'] = collection
     replaces['migration.file'] = `${timestamp}_${command.toDashCase(collection)}_create`
