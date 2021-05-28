@@ -1,7 +1,7 @@
 {
   "name": "@devitools/cli",
   "description": "Command line devitools",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "author": "William Correa @wilcorrea",
   "bin": {
     "devi": "bin/run"
