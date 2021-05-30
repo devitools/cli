@@ -16,8 +16,13 @@ export default abstract class Base extends Command {
    */
   async welcome() {
     await cli.url('@devitools', 'https://devi.tools')
-    await cli.annotation('# Welcome to devitools family!', 'https://devi.tools')
+    await cli.annotation(chalk.green('# Welcome to devitools family!'), 'https://devi.tools')
     this.log('--')
+  }
+
+  async bye() {
+    this.log('--')
+    this.log(chalk.green('# All done!'))
   }
 
   /**
@@ -157,12 +162,32 @@ export default abstract class Base extends Command {
 
   /**
    * @param {string} message
-   * @param {string} fallback
+   * @param {string | Record<string, unknown>} options
    *
    * @return {Promise<string>}
    */
-  async prompt(message: string, fallback: string): Promise<string> {
-    const prompt = await cli.prompt(`${chalk.yellow('?')} ${message} [${fallback}]`, {required: false})
+  async prompt(message: string, options: string | Record<string, unknown> = {}): Promise<string> {
+    let fallback = ''
+    if (typeof options === 'string') {
+      fallback = options
+    }
+
+    let required = false
+    if (typeof options === 'object') {
+      const {fallback: f, required: r} = options
+      if (typeof f !== 'undefined') {
+        fallback = String(f)
+      }
+      if (typeof r !== 'undefined') {
+        required = Boolean(r)
+      }
+    }
+
+    let advice = ''
+    if (fallback) {
+      advice = ` [${fallback}]`
+    }
+    const prompt = await cli.prompt(`${chalk.yellow('?')} ${message}${advice}`, {required})
     if (!prompt) {
       return fallback
     }

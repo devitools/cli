@@ -18,6 +18,7 @@ export default class Add extends Base {
    * @type {string[]}
    */
   static examples = [
+    '$ devi add general --group | devi add general -g // create new namespace without schemas',
     '$ devi add main.category // add a new entity Category namespaced by Main',
     '$ devi add financial.bank-account // use kebab case',
     '$ devi add main.company.partners // use dot notation to nested items',
@@ -60,6 +61,7 @@ export default class Add extends Base {
     override: flags.boolean({char: 'o'}),
     template: flags.string({char: 't'}),
     parameters: flags.string({char: 'p'}),
+    group: flags.boolean({char: 'g'}),
   }
 
   /**
@@ -168,7 +170,7 @@ export default class Add extends Base {
 
     const {args, flags} = this.parse(Add)
     const fragments = String(args.domain).split('.')
-    if (fragments.length <= 1) {
+    if (!flags.group && fragments.length <= 1) {
       this.error('The domain is not valid')
       this.exit(2)
       return
@@ -176,10 +178,13 @@ export default class Add extends Base {
 
     const template = flags.template || target.template || 'default'
 
-    const entity = String(fragments.pop())
-    .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>{}[]\/]/gi, '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    let entity = ''
+    if (!flags.group) {
+      entity = String(fragments.pop())
+      .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>{}[]\/]/gi, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+    }
 
     const domain = fragments.map(fragment => {
       return fragment
@@ -233,6 +238,8 @@ export default class Add extends Base {
       }
     }
 
-    runner(this, target, entity, domain, parameters)
+    await runner(this, target, entity, domain, parameters, flags.group)
+
+    this.bye()
   }
 }

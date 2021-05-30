@@ -108,6 +108,5 @@ module.exports = async function (command, target, entity, domain, parameters) {
     )
   }
 
-  command.log('Domain created successfully\n')
-  command.notify('Domain created successfully')
+  command.log('All done\n')
 }
