@@ -41,15 +41,17 @@ export default class Init extends Base {
     const responses: any = await this.choose(
       'type',
       'Select [frontend] language/framework',
-      [{name: 'quasar'}, {name: 'vuetify'}, {name: 'material-ui'}]
+      [{name: 'quasar'}, {name: 'vuetify'}, {name: 'material-ui'}],
     )
 
     return {
       type: responses.type,
       root: await this.prompt('Frontend root dir', fallback),
-      domains: await this.prompt('  (Frontend) Domains relative path', '/source/domains'),
-      views: await this.prompt('  (Frontend) Views relative path', '/resources/views/dashboard'),
-      i18n: await this.prompt('  (Frontend) I18n relative path', '/resources/lang'),
+      domains: await this.prompt('##  (Frontend) Domains relative path', '/source/domains'),
+      views: await this.prompt('##  (Frontend) Views relative path', '/resources/views/dashboard'),
+      settings: await this.prompt('##  (Frontend) Settings relative path', '/src'),
+      routes: await this.prompt('##  (Frontend) Routes relative path', '/routes'),
+      i18n: await this.prompt('##  (Frontend) I18n relative path', '/resources/lang'),
     }
   }
 
@@ -69,9 +71,10 @@ export default class Init extends Base {
     return {
       type: responses.type,
       root: await this.prompt('Backend root dir', fallback),
-      domains: await this.prompt('  (Backend) Domains relative path', '/app/Domains'),
-      controller: await this.prompt('  (Backend) Controller relative path', '/app/Http/Controllers'),
-      migration: await this.prompt('  (Backend) Migrations relative path', '/database/migrations'),
+      domains: await this.prompt('##  (Backend) Domains relative path', '/app/Domains'),
+      controllers: await this.prompt('##  (Backend) Controller relative path', '/app/Http/Controllers'),
+      migrations: await this.prompt('##  (Backend) Migrations relative path', '/database/migrations'),
+      routes: await this.prompt('##  (Backend) Routes relative path', '/routes'),
     }
   }
 
@@ -100,6 +103,8 @@ export default class Init extends Base {
       root: '',
       domains: '',
       views: '',
+      settings: '',
+      routes: '',
       i18n: '',
     }
 
@@ -107,8 +112,9 @@ export default class Init extends Base {
       type: null,
       root: '',
       domains: '',
-      controller: '',
-      migration: '',
+      controllers: '',
+      migrations: '',
+      routes: '',
     }
 
     const both = !flags.front && !flags.front
