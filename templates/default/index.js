@@ -1,32 +1,248 @@
 const Path = require('path')
 
 /**
- * @param command
- * @param target
- * @param entity
- * @param domain
- * @param parameters
+ * @typedef {{
+ *   welcome()
+ *   bye()
+ *   reverse(input: string): string
+ *   prepend(input: string, value: string): string
+ *   capitalize(input: string): string
+ *   unCapitalize(input: string): string
+ *   toCamelCase(input: string, first?: boolean): string
+ *   toDashCase(input: string): string
+ *   pluralize(input: string): string
+ *   exists(filename: string): Promise<boolean>
+ *   replaceTemplate (string: string, replaces: Record<string, unknown> | string[]): string
+ *   replaceExtension (file: string): string
+ *   replacePath (template: string, replaces: Record<string, unknown> | string[], regex?: Function): string
+ *   writeFile(path: string, contents: any): boolean
+ *   prompt(message: string, options: string | Record<string, unknown> = {}): Promise<string>
+ *   choose(name: string, message: string, choices: *[], type: string): Promise<any>
+ *   notify(message: string): void
+ * }} Command
+ *
+ * @typedef {{
+ *    front: {
+ *      type: string,
+ *      root: string,
+ *      domains: string,
+ *      views: string,
+ *      i18n: string
+ *    },
+ *    back: {
+ *      type: string,
+ *      root: string,
+ *      domains: string,
+ *      controllers: string,
+ *      migrations: string
+ *    }
+ * }} Template
  */
-module.exports = async function (command, target, entity, domain, parameters) {
-  const templateSettings = {
-    front: {
-      type: ['quasar'], // ['quasar', 'vuetify', 'material-ui']
-      root: 'front',
-      domains: Path.join('source', 'domains'),
-      views: Path.join('resources', 'views'),
-      i18n: Path.join('resources', 'lang'),
-    },
-    back: {
-      type: ['laravel'], // ['laravel', 'symfony']
-      root: 'back',
-      domains: Path.join('Domains'),
-      controller: Path.join('Http', 'Controllers'),
-      migration: Path.join('migrations'),
-    },
+
+const templateSettings = {
+  front: {
+    type: ['quasar'], // ['quasar', 'vuetify', 'material-ui']
+    root: 'front',
+    domains: 'domains',
+    views: 'views',
+    routes: 'routes',
+    settings: 'settings',
+    i18n: 'lang'
+  },
+  back: {
+    type: ['laravel'], // ['laravel', 'symfony']
+    root: 'back',
+    domains: 'domains',
+    controllers: 'controllers',
+    migrations: 'migrations',
+    routes: 'routes'
+  }
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
+ * @param {string} namespace
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ */
+async function handleGroupFront (command, target, namespace, parameters, replaces) {
+  command.log(`## frontend ~> create group '${namespace}'`)
+
+  replaces['domain.icon'] = await command.prompt('  Icon', 'folder')
+  replaces['domain.label'] = await command.prompt('  Label (ex.: Settings)', { required: true })
+
+  const frontType = target.front.type
+  const templateFront = Path.join(__dirname, templateSettings.front.root, frontType, '@group')
+  const targetFront = Path.join(process.cwd(), target.front.root)
+
+  const generator = (namespace, filter = []) => {
+    return command.generate(
+      Path.join(templateFront, templateSettings.front[namespace]),
+      Path.join(targetFront, target.front[namespace]),
+      replaces,
+      filter
+    )
+  }
+  await generator('views')
+  await generator('settings')
+  await generator('routes')
+  await generator('i18n')
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
+ * @param {string[]} domain
+ * @param {string} namespace
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ */
+async function handleAntecessorFront (command, target, domain, parameters, replaces, namespace) {
+  const targetFront = Path.join(process.cwd(), target.front.root)
+  const i18n = Path.join(targetFront, target.front.views, namespace, 'index.js')
+  const exists = await command.exists(i18n)
+  if (exists) {
+    return
+  }
+  const response = await command.choose(
+    'antecessor',
+    `The namespace '${namespace}' doesn't exists on "frontend". Do you want to create it as a "group" or as an "entity"?`,
+    [
+      {name: 'group'},
+      {name: 'entity'},
+      // {name: 'ignore'}
+    ]
+  )
+
+  if (response.antecessor === 'group') {
+    return handleGroupFront(command, target, namespace, parameters, replaces)
+  }
+  if (response.antecessor === 'entity') {
+    return handleEntityFront(command, target, domain, namespace, parameters, replaces)
+  }
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
+ * @param {string[]} domain
+ * @param {string} entity
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ */
+async function handleEntityFront (command, target, domain, entity, parameters, replaces) {
+  // resolve antecessor
+  for (const antecessor of domain) {
+    await handleAntecessorFront(command, target, domain, parameters, replaces, antecessor)
   }
 
-  const lower = domain.map(entry => entry.toLowerCase())
+  command.log(`## frontend ~> create entity '${entity}'`)
 
+  const frontType = target.front.type
+  const templateFront = Path.join(__dirname, templateSettings.front.root, frontType, '@entity')
+  const targetFront = Path.join(process.cwd(), target.front.root)
+
+  replaces['entity.icon'] = await command.prompt('  Icon', 'folder')
+  replaces['entity.plural'] = await command.prompt('  Plural label (ex.: People)', { required: true })
+  replaces['entity.singular'] = await command.prompt('  Singular label (ex.: Person)', { required: true })
+
+  const filter = (parameters.builtin || parameters.array) ? [new RegExp('({{entity}}Schema|settings).*')] : []
+
+  const generator = (namespace, filter = []) => {
+    return command.generate(
+      Path.join(templateFront, templateSettings.front[namespace]),
+      Path.join(targetFront, target.front[namespace]),
+      replaces,
+      filter
+    )
+  }
+  await generator('domains', filter)
+  await generator('views')
+  await generator('i18n')
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
+ * @param {string} namespace
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ */
+async function handleGroupBack (command, target, namespace, parameters, replaces) {
+  command.log(`## backend ~> create group '${namespace}'`)
+
+  const backType = target.back.type
+  const templateBack = Path.join(__dirname, templateSettings.back.root, backType, '@group')
+  const targetBack = Path.join(process.cwd(), target.back.root)
+
+  const generator = (namespace, filter = []) => {
+    return command.generate(
+      Path.join(templateBack, templateSettings.back[namespace]),
+      Path.join(targetBack, target.back[namespace]),
+      replaces,
+      filter
+    )
+  }
+  await generator('routes')
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
+ * @param {string[]} domain
+ * @param {string} namespace
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ * @return {boolean}
+ */
+async function handleAntecessorBack (command, target, domain, parameters, replaces, namespace) {
+  const targetFront = Path.join(process.cwd(), target.back.root)
+  const i18n = Path.join(targetFront, target.back.routes, namespace + '.php')
+  const exists = await command.exists(i18n)
+  if (exists) {
+    return
+  }
+
+  const response = await command.choose(
+    'antecessor',
+    `The namespace '${namespace}' doesn't exists on "backend". Do you want to create it as a "group" or as an "entity"?`,
+    [
+      {name: 'group'},
+      {name: 'entity'},
+      // {name: 'ignore'}
+    ]
+  )
+
+  if (response.antecessor === 'group') {
+    return handleGroupBack(command, target, namespace, parameters, replaces)
+  }
+  if (response.antecessor === 'entity') {
+    return handleEntityBack(command, target, domain, namespace, parameters, replaces)
+  }
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
+ * @param {string[]} domain
+ * @param {string} entity
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ */
+async function handleEntityBack (command, target, domain, entity, parameters, replaces) {
+  // resolve antecessor
+  for (const antecessor of domain) {
+    await handleAntecessorBack(command, target, domain, parameters, replaces, antecessor)
+  }
+
+  command.log(`## backend ~> create entity '${entity}'`)
+
+  const backType = target.back.type
+  const templateBack = Path.join(__dirname, templateSettings.back.root, backType, '@entity')
+  const targetBack = Path.join(process.cwd(), target.back.root)
+
+  const collection = await command.prompt('  Table or collection:', command.pluralize(entity.replace(/[^a-zA-Z0-9]/g, '_')))
   const pad = input => input < 10 ? '0' + input : input
   const date = new Date()
   const timestamp = date.getFullYear().toString() + '_' +
@@ -36,77 +252,63 @@ module.exports = async function (command, target, entity, domain, parameters) {
     pad(date.getMinutes()) +
     pad(date.getSeconds())
 
+  replaces['entity.collection'] = collection
+  replaces['migration.file'] = `${timestamp}_${command.toDashCase(collection)}_create`
+  replaces['migration.class'] = `${command.toCamelCase(collection, true)}Create`
+
+  const generator = (namespace, filter = []) => {
+    return command.generate(
+      Path.join(templateBack, templateSettings.back[namespace]),
+      Path.join(targetBack, target.back[namespace]),
+      replaces,
+      filter
+    )
+  }
+  await generator('domains')
+  await generator('controllers')
+  await generator('migrations')
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
+ * @param {string} name
+ * @param {string[]} domain
+ * @param {Record<string, unknown>} parameters
+ * @param {boolean} group
+ */
+module.exports = async function (command, target, name, domain, parameters, group) {
+  const lower = domain.map(entry => entry.toLowerCase())
+
   const replaces = {
     namespace: domain.map(entry => command.toCamelCase(entry, true)).join('\\'),
     domain: domain.map(entry => command.toCamelCase(entry, true)).join('/'),
     'domain.lower': lower.join('/'),
-    entity: command.toCamelCase(entity, true),
-    'entity.lower': entity.toLowerCase(),
+    'domain.icon': '',
+    'domain.label': '',
+    entity: command.toCamelCase(name, true),
+    'entity.lower': name.toLowerCase(),
     'entity.icon': '',
     'entity.collection': '',
     'migration.file': '',
     'migration.class': '',
-    parameters,
+    ...parameters
+  }
+
+  if (group) {
+    if (target.front.type) {
+      await handleGroupFront(command, target, name, parameters, replaces)
+    }
+    if (target.back.type) {
+      await handleGroupBack(command, target, name, parameters, replaces)
+    }
+    return
   }
 
   if (target.front.type) {
-    const frontType = target.front.type
-    const templateFront = Path.join(__dirname, templateSettings.front.root, frontType)
-    const targetFront = Path.join(process.cwd(), target.front.root)
-
-    const plural = await command.prompt('  Label used on plural names (permissions, menu, breadcrumbs)', '')
-    const singular = await command.prompt('  Label used on singular names (breadcrumbs)', '')
-
-    replaces['entity.icon'] = await command.prompt('  Icon used on the interface', 'folder')
-    replaces['entity.plural'] = plural || '[[entity.plural]]'
-    replaces['entity.singular'] = singular || '[[entity.singular]]'
-
-    const filter = (parameters.builtin || parameters.array) ? [new RegExp('({{entity}}Schema|settings).*')] : []
-    await command.generate(
-      Path.join(templateFront, templateSettings.front.domains),
-      Path.join(targetFront, target.front.domains),
-      replaces,
-      filter
-    )
-    await command.generate(
-      Path.join(templateFront, templateSettings.front.views),
-      Path.join(targetFront, target.front.views),
-      replaces
-    )
-    await command.generate(
-      Path.join(templateFront, templateSettings.front.i18n),
-      Path.join(targetFront, target.front.i18n),
-      replaces
-    )
+    await handleEntityFront(command, target, domain, name, parameters, replaces)
   }
-
   if (target.back.type) {
-    const backType = target.back.type
-    const templateBack = Path.join(__dirname, templateSettings.back.root, backType)
-    const targetBack = Path.join(process.cwd(), target.back.root)
-
-    const collection = await command.prompt('  Table or collection:', command.pluralize(entity.replace(/[^a-zA-Z0-9]/g, '_')))
-
-    replaces['entity.collection'] = collection
-    replaces['migration.file'] = `${timestamp}_${command.toDashCase(collection)}_create`
-    replaces['migration.class'] = `${command.toCamelCase(collection, true)}Create`
-
-    await command.generate(
-      Path.join(templateBack, templateSettings.back.domains),
-      Path.join(targetBack, target.back.domains),
-      replaces
-    )
-    await command.generate(
-      Path.join(templateBack, templateSettings.back.controller),
-      Path.join(targetBack, target.back.controller),
-      replaces
-    )
-    await command.generate(
-      Path.join(templateBack, templateSettings.back.migration),
-      Path.join(targetBack, target.back.migration),
-      replaces
-    )
+    await handleEntityBack(command, target, domain, name, parameters, replaces)
   }
-
-  command.log('All done\n')
 }
