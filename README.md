@@ -63,7 +63,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.6.6 win32-x64 node-v12.18.4
+@devitools/cli/0.7.0 win32-x64 node-v12.18.4
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -90,12 +90,14 @@ ARGUMENTS
   DOMAIN  the domain that will be created
 
 OPTIONS
+  -g, --group
   -h, --help                   show CLI help
   -o, --override
   -p, --parameters=parameters
   -t, --template=template
 
 EXAMPLES
+  $ devi add general --group | devi add general -g // create new namespace without schemas
   $ devi add main.category // add a new entity Category namespaced by Main
   $ devi add financial.bank-account // use kebab case
   $ devi add main.company.partners // use dot notation to nested items
@@ -110,7 +112,7 @@ EXAMPLES
      - devi add foo.bar -p={"foo":"bar"}
 ```
 
-_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.6.6/src/commands/add.ts)_
+_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.7.0/src/commands/add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -171,5 +173,5 @@ EXAMPLES
   $ devi init -b // init a project with just backend
 ```
 
-_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.6.6/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.7.0/src/commands/init.ts)_
 <!-- commandsstop -->
