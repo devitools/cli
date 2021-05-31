@@ -38,12 +38,11 @@ export default class Init extends Base {
    * @param {string} fallback
    */
   async front(fallback = '/frontend') {
-    const responses: any = await inquirer.prompt([{
-      name: 'type',
-      message: 'Select [frontend] language/framework',
-      type: 'list',
-      choices: [{name: 'quasar'}, {name: 'vuetify'}, {name: 'material-ui'}],
-    }])
+    const responses: any = await this.choose(
+      'type',
+      'Select [frontend] language/framework',
+      [{name: 'quasar'}, {name: 'vuetify'}, {name: 'material-ui'}]
+    )
 
     return {
       type: responses.type,

@@ -132,15 +132,8 @@ export default class Add extends Base {
         continue
       }
 
-      let exists = false
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        await FileSystem.promises.access(filename)
-        exists = true
-      } catch (error) {
-        // silent is gold
-      }
-
+      // eslint-disable-next-line no-await-in-loop
+      const exists = await this.exists(filename)
       if (exists) {
         // eslint-disable-next-line no-await-in-loop
         const answer = await this.prompt(`  File '${entry.target}' already exists. Override?`, 'y')
@@ -150,6 +143,21 @@ export default class Add extends Base {
       }
       this.writeFile(Path.join(target, entry.target), file)
     }
+  }
+
+  /**
+   * @param {string} filename
+   * @return {Promise<boolean>}
+   */
+  async exists(filename: string) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await FileSystem.promises.access(filename)
+      return true
+    } catch (error) {
+      // silent is gold
+    }
+    return false
   }
 
   /**
@@ -178,7 +186,7 @@ export default class Add extends Base {
 
     const template = flags.template || target.template || 'default'
 
-    let entity = ''
+    let entity = fragments[0]
     if (!flags.group) {
       entity = String(fragments.pop())
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>{}[]\/]/gi, '')

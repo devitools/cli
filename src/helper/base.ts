@@ -7,6 +7,8 @@ import * as FileSystem from 'fs'
 import * as chalk from 'chalk'
 import * as Handlebars from 'handlebars'
 import * as pluralize from 'pluralize'
+import * as inquirer from 'inquirer'
+import {QuestionCollection} from 'inquirer'
 
 /**
  * @class {Base}
@@ -20,6 +22,8 @@ export default abstract class Base extends Command {
     this.log('--')
   }
 
+  /**
+   */
   async bye() {
     this.log('--')
     this.log(chalk.green('# All done!'))
@@ -99,7 +103,8 @@ export default abstract class Base extends Command {
   }
 
   /**
-   * @param file
+   * @param {string} file
+   * @returns {string}
    */
   replaceExtension = (file: string) => {
     const pieces = file.split('.')
@@ -131,14 +136,14 @@ export default abstract class Base extends Command {
     if (Array.isArray(replaces)) {
       return replaces.reduce(
         (replacing, value, index) => replace(replacing, String(index), String(value)),
-        string
+        string,
       )
     }
 
     if (typeof replaces === 'object') {
       return Object.keys(replaces).reduce(
         (replacing, key) => replace(replacing, key, String(replaces[key])),
-        string
+        string,
       )
     }
   }
@@ -147,7 +152,7 @@ export default abstract class Base extends Command {
    * @param {string} path
    * @param {any} contents
    *
-   * @return {Promise<any>}
+   * @return {boolean}
    */
   writeFile(path: string, contents: any) {
     FileSystem.mkdirSync(Path.dirname(path), {recursive: true})
@@ -192,6 +197,17 @@ export default abstract class Base extends Command {
       return fallback
     }
     return String(prompt)
+  }
+
+  /**
+   * @param {string} name
+   * @param {string} message
+   * @param {string} choices
+   * @param {string} type
+   * @return {Promise<any>}
+   */
+  choose(name: string, message: string, choices: QuestionCollection, type = 'list') {
+    return inquirer.prompt([{name, message, type, choices}])
   }
 
   /**
