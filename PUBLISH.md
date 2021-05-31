@@ -2,6 +2,7 @@
 
 ## 1. commit all changes
 ```
+git checkout nightly
 git add <changes>
 git commit -m "(<type>) <message>"
 ```
