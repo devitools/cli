@@ -11,8 +11,15 @@ git commit -m "(<type>) <message>"
 yarn publish
 ```
 
-## 3. push everything (with tags)
+## 3. move the changes to main
 ```
-git push
+git checkout main
+git rebase nightly
+git checkout nightly
+```
+
+## 4. push everything (with tags)
+```
+git push --all
 git push --tags
 ```
