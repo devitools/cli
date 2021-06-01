@@ -62,12 +62,46 @@ const templateSettings = {
 /**
  * @param {Command} command
  * @param {Template} target
+ * @param {string[]} domain
+ * @param {string} namespace
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ */
+async function handleAntecessorFront (command, target, domain, parameters, replaces, namespace) {
+  const targetFront = Path.join(process.cwd(), target.front.root)
+  const routes = Path.join(targetFront, target.front.routes, namespace + '.js')
+  const exists = await command.exists(routes)
+  if (exists) {
+    return
+  }
+
+  const response = await command.choose(
+    'antecessor',
+    `The namespace '${namespace}' doesn't exists on "frontend". Do you want to create it as a "group" or as an "entity"?`,
+    [
+      { name: 'group' },
+      { name: 'entity' }
+      // {name: 'ignore'}
+    ]
+  )
+
+  if (response.antecessor === 'group') {
+    return handleGroupFront(command, target, namespace, parameters, replaces)
+  }
+  if (response.antecessor === 'entity') {
+    return handleEntityFront(command, target, domain, namespace, parameters, replaces)
+  }
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
  * @param {string} namespace
  * @param {Record<string, unknown>} parameters
  * @param {Record<string, unknown>} replaces
  */
 async function handleGroupFront (command, target, namespace, parameters, replaces) {
-  command.log(`## frontend ~> create group '${namespace}'`)
+  command.positive(`##  (Frontend) Creating group '${namespace}'`)
 
   replaces['domain.icon'] = await command.prompt('  Icon', 'folder')
   replaces['domain.label'] = await command.prompt('  Label (ex.: Settings)', { required: true })
@@ -84,43 +118,13 @@ async function handleGroupFront (command, target, namespace, parameters, replace
       filter
     )
   }
+  await generator('domains')
   await generator('views')
   await generator('settings')
   await generator('routes')
   await generator('i18n')
-}
 
-/**
- * @param {Command} command
- * @param {Template} target
- * @param {string[]} domain
- * @param {string} namespace
- * @param {Record<string, unknown>} parameters
- * @param {Record<string, unknown>} replaces
- */
-async function handleAntecessorFront (command, target, domain, parameters, replaces, namespace) {
-  const targetFront = Path.join(process.cwd(), target.front.root)
-  const i18n = Path.join(targetFront, target.front.views, namespace, 'index.js')
-  const exists = await command.exists(i18n)
-  if (exists) {
-    return
-  }
-  const response = await command.choose(
-    'antecessor',
-    `The namespace '${namespace}' doesn't exists on "frontend". Do you want to create it as a "group" or as an "entity"?`,
-    [
-      {name: 'group'},
-      {name: 'entity'},
-      // {name: 'ignore'}
-    ]
-  )
-
-  if (response.antecessor === 'group') {
-    return handleGroupFront(command, target, namespace, parameters, replaces)
-  }
-  if (response.antecessor === 'entity') {
-    return handleEntityFront(command, target, domain, namespace, parameters, replaces)
-  }
+  return command.positive(`## (Frontend) Group '${namespace}' created\n`)
 }
 
 /**
@@ -133,11 +137,11 @@ async function handleAntecessorFront (command, target, domain, parameters, repla
  */
 async function handleEntityFront (command, target, domain, entity, parameters, replaces) {
   // resolve antecessor
-  for (const antecessor of domain) {
-    await handleAntecessorFront(command, target, domain, parameters, replaces, antecessor)
-  }
+  // for (const antecessor of domain) {
+  //   await handleAntecessorFront(command, target, domain, parameters, replaces, antecessor)
+  // }
 
-  command.log(`## frontend ~> create entity '${entity}'`)
+  command.positive(`##  (Frontend) Creating entity '${entity}'`)
 
   const frontType = target.front.type
   const templateFront = Path.join(__dirname, templateSettings.front.root, frontType, '@entity')
@@ -160,31 +164,8 @@ async function handleEntityFront (command, target, domain, entity, parameters, r
   await generator('domains', filter)
   await generator('views')
   await generator('i18n')
-}
 
-/**
- * @param {Command} command
- * @param {Template} target
- * @param {string} namespace
- * @param {Record<string, unknown>} parameters
- * @param {Record<string, unknown>} replaces
- */
-async function handleGroupBack (command, target, namespace, parameters, replaces) {
-  command.log(`## backend ~> create group '${namespace}'`)
-
-  const backType = target.back.type
-  const templateBack = Path.join(__dirname, templateSettings.back.root, backType, '@group')
-  const targetBack = Path.join(process.cwd(), target.back.root)
-
-  const generator = (namespace, filter = []) => {
-    return command.generate(
-      Path.join(templateBack, templateSettings.back[namespace]),
-      Path.join(targetBack, target.back[namespace]),
-      replaces,
-      filter
-    )
-  }
-  await generator('routes')
+  return command.positive(`## (Frontend) Entity '${entity}' created\n`)
 }
 
 /**
@@ -198,8 +179,8 @@ async function handleGroupBack (command, target, namespace, parameters, replaces
  */
 async function handleAntecessorBack (command, target, domain, parameters, replaces, namespace) {
   const targetFront = Path.join(process.cwd(), target.back.root)
-  const i18n = Path.join(targetFront, target.back.routes, namespace + '.php')
-  const exists = await command.exists(i18n)
+  const routes = Path.join(targetFront, target.back.routes, namespace + '.php')
+  const exists = await command.exists(routes)
   if (exists) {
     return
   }
@@ -208,8 +189,8 @@ async function handleAntecessorBack (command, target, domain, parameters, replac
     'antecessor',
     `The namespace '${namespace}' doesn't exists on "backend". Do you want to create it as a "group" or as an "entity"?`,
     [
-      {name: 'group'},
-      {name: 'entity'},
+      { name: 'group' },
+      { name: 'entity' }
       // {name: 'ignore'}
     ]
   )
@@ -225,6 +206,33 @@ async function handleAntecessorBack (command, target, domain, parameters, replac
 /**
  * @param {Command} command
  * @param {Template} target
+ * @param {string} namespace
+ * @param {Record<string, unknown>} parameters
+ * @param {Record<string, unknown>} replaces
+ */
+async function handleGroupBack (command, target, namespace, parameters, replaces) {
+  command.positive(`##  (Backend) Creating group '${namespace}'`)
+
+  const backType = target.back.type
+  const templateBack = Path.join(__dirname, templateSettings.back.root, backType, '@group')
+  const targetBack = Path.join(process.cwd(), target.back.root)
+
+  const generator = (namespace, filter = []) => {
+    return command.generate(
+      Path.join(templateBack, templateSettings.back[namespace]),
+      Path.join(targetBack, target.back[namespace]),
+      replaces,
+      filter
+    )
+  }
+  await generator('routes')
+
+  return command.positive(`## (Backend) Group '${namespace}' created\n`)
+}
+
+/**
+ * @param {Command} command
+ * @param {Template} target
  * @param {string[]} domain
  * @param {string} entity
  * @param {Record<string, unknown>} parameters
@@ -232,11 +240,11 @@ async function handleAntecessorBack (command, target, domain, parameters, replac
  */
 async function handleEntityBack (command, target, domain, entity, parameters, replaces) {
   // resolve antecessor
-  for (const antecessor of domain) {
-    await handleAntecessorBack(command, target, domain, parameters, replaces, antecessor)
-  }
+  // for (const antecessor of domain) {
+  //   await handleAntecessorBack(command, target, domain, parameters, replaces, antecessor)
+  // }
 
-  command.log(`## backend ~> create entity '${entity}'`)
+  command.positive(`##  (Backend) Creating entity '${entity}'`)
 
   const backType = target.back.type
   const templateBack = Path.join(__dirname, templateSettings.back.root, backType, '@entity')
@@ -267,17 +275,19 @@ async function handleEntityBack (command, target, domain, entity, parameters, re
   await generator('domains')
   await generator('controllers')
   await generator('migrations')
+
+  return command.positive(`## (Backend) Group '${entity}' created\n`)
 }
 
 /**
  * @param {Command} command
  * @param {Template} target
- * @param {string} name
+ * @param {string} entity
  * @param {string[]} domain
  * @param {Record<string, unknown>} parameters
  * @param {boolean} group
  */
-module.exports = async function (command, target, name, domain, parameters, group) {
+module.exports = async function (command, target, entity, domain, parameters, group) {
   const lower = domain.map(entry => entry.toLowerCase())
 
   const replaces = {
@@ -286,8 +296,8 @@ module.exports = async function (command, target, name, domain, parameters, grou
     'domain.lower': lower.join('/'),
     'domain.icon': '',
     'domain.label': '',
-    entity: command.toCamelCase(name, true),
-    'entity.lower': name.toLowerCase(),
+    entity: command.toCamelCase(entity, true),
+    'entity.lower': entity.toLowerCase(),
     'entity.icon': '',
     'entity.collection': '',
     'migration.file': '',
@@ -297,18 +307,22 @@ module.exports = async function (command, target, name, domain, parameters, grou
 
   if (group) {
     if (target.front.type) {
-      await handleGroupFront(command, target, name, parameters, replaces)
+      command.positive('##  (Frontend)')
+      await handleGroupFront(command, target, entity, parameters, replaces)
     }
     if (target.back.type) {
-      await handleGroupBack(command, target, name, parameters, replaces)
+      command.positive('##  (Backend)')
+      await handleGroupBack(command, target, entity, parameters, replaces)
     }
     return
   }
 
   if (target.front.type) {
-    await handleEntityFront(command, target, domain, name, parameters, replaces)
+    command.positive('##  (Frontend)')
+    await handleEntityFront(command, target, domain, entity, parameters, replaces)
   }
   if (target.back.type) {
-    await handleEntityBack(command, target, domain, name, parameters, replaces)
+    command.positive('##  (Backend)')
+    await handleEntityBack(command, target, domain, entity, parameters, replaces)
   }
 }

@@ -26,7 +26,28 @@ export default abstract class Base extends Command {
    */
   async bye() {
     this.log('--')
-    this.log(chalk.green('# All done!'))
+    this.positive('# All done!')
+  }
+
+  /**
+   * @param {string} message
+   */
+  async positive(message: string) {
+    this.log(chalk.green(message))
+  }
+
+  /**
+   * @param {string} message
+   */
+  async negative(message: string) {
+    this.log(chalk.red(message))
+  }
+
+  /**
+   * @param {string} message
+   */
+  async disabled(message: string) {
+    this.log(chalk.gray(message))
   }
 
   /**
@@ -98,8 +119,8 @@ export default abstract class Base extends Command {
   replaceTemplate = (string: string, replaces: Record<string, unknown> | string[]) => {
     const template = Handlebars.compile(string)
     return template(replaces)
-    .replace(/#php/g, '<?php')
-    .replace(/#\/php/g, '<?')
+      .replace(/#php/g, '<?php')
+      .replace(/#\/php/g, '<?')
   }
 
   /**

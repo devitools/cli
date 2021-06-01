@@ -207,7 +207,7 @@ export default class Add extends Base {
     let runner
     try {
       runner = require(project)
-      this.log(`Template '${template}' loaded from project`)
+      this.disabled(`~> Template '${template}' loaded from project`)
     } catch (error) {
       // silent is gold
     }
@@ -215,7 +215,7 @@ export default class Add extends Base {
     if (!runner) {
       try {
         runner = require(bundled)
-        this.log(`Template '${template}' loaded from bundled`)
+        this.disabled(`~> Template '${template}' loaded from bundled`)
       } catch (error) {
         // silent is gold
       }
@@ -223,7 +223,7 @@ export default class Add extends Base {
 
     if (!runner) {
       this.log(JSON.stringify({bundled, project}, null, 2))
-      this.error(`Template '${template}' not found`)
+      this.error(`~> Template '${template}' not found`)
       return
     }
 
