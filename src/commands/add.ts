@@ -146,21 +146,6 @@ export default class Add extends Base {
   }
 
   /**
-   * @param {string} filename
-   * @return {Promise<boolean>}
-   */
-  async exists(filename: string) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      await FileSystem.promises.access(filename)
-      return true
-    } catch (error) {
-      // silent is gold
-    }
-    return false
-  }
-
-  /**
    */
   async run() {
     await this.welcome()

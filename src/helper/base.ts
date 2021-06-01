@@ -119,8 +119,8 @@ export default abstract class Base extends Command {
   replaceTemplate = (string: string, replaces: Record<string, unknown> | string[]) => {
     const template = Handlebars.compile(string)
     return template(replaces)
-      .replace(/#php/g, '<?php')
-      .replace(/#\/php/g, '<?')
+    .replace(/#php/g, '<?php')
+    .replace(/#\/php/g, '<?')
   }
 
   /**
@@ -229,6 +229,39 @@ export default abstract class Base extends Command {
    */
   choose(name: string, message: string, choices: QuestionCollection, type = 'list') {
     return inquirer.prompt([{name, message, type, choices}])
+  }
+
+  /**
+   * @param {string} filename
+   * @return {Promise<boolean>}
+   */
+  async exists(filename: string) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await FileSystem.promises.access(filename)
+      return true
+    } catch (error) {
+      // silent is gold
+    }
+    return false
+  }
+
+  /**
+   * @param {string} command
+   */
+  execute(command: string): Promise<string> {
+    const exec = require('child_process').exec
+
+    return new Promise((resolve, reject) => {
+      const handler = function (error: unknown, stdout: string, stderr: string) {
+        if (error) {
+          reject(stderr)
+          return
+        }
+        resolve(stdout)
+      }
+      exec(command, handler)
+    })
   }
 
   /**
