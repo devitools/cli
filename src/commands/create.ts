@@ -104,11 +104,18 @@ export default class Create extends Base {
 
       const git: SimpleGit = createSimpleGit(pwd)
       const script = Path.join(pwd, 'devitools.js')
+      let installer = require(script)
       try {
-        const installer = require(script)
-        await installer(this, pwd, {name, short, git})
+        installer = require(script)
       } catch (error) {
         this.disabled(`~> The template '${template}' doesn't have an installer`)
+      }
+      if (installer) {
+        try {
+          await installer(this, pwd, {name, short, git})
+        } catch (error) {
+          this.error(error)
+        }
       }
     } catch (error) {
       this.error(error)
