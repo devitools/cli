@@ -63,7 +63,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.8.0 win32-x64 node-v12.18.4
+@devitools/cli/0.9.0 win32-x64 node-v12.18.4
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -76,9 +76,11 @@ USAGE
 * [`devi add DOMAIN`](#devi-add-domain)
 * [`devi autocomplete [SHELL]`](#devi-autocomplete-shell)
 * [`devi create FOLDER [REPO]`](#devi-create-folder-repo)
+* [`devi env`](#devi-env)
 * [`devi help [COMMAND]`](#devi-help-command)
 * [`devi init`](#devi-init)
-* [`devi update`](#devi-update)
+* [`devi pull`](#devi-pull)
+* [`devi update [CHANNEL]`](#devi-update-channel)
 
 ## `devi add DOMAIN`
 
@@ -114,7 +116,7 @@ EXAMPLES
      - devi add foo.bar -p={"foo":"bar"}
 ```
 
-_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/add.ts)_
+_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.9.0/src/commands/add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -149,7 +151,7 @@ USAGE
 
 ARGUMENTS
   FOLDER  [default: devitools] the name of the new project folder
-  REPO    [default: git@github.com:devitools/starter-kit.git] repository base to create the new project
+  REPO    [default: https://github.com/devitools/starter-kit.git] repository base to create the new project
 
 OPTIONS
   -h, --help  show CLI help
@@ -158,7 +160,24 @@ EXAMPLE
   $ devi create <name>
 ```
 
-_See code: [src/commands/create.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/create.ts)_
+_See code: [src/commands/create.ts](https://github.com/devitools/cli/blob/v0.9.0/src/commands/create.ts)_
+
+## `devi env`
+
+update the devitools resources
+
+```
+USAGE
+  $ devi env
+
+OPTIONS
+  -h, --help  show CLI help
+
+EXAMPLE
+  $ devi env
+```
+
+_See code: [src/commands/env.ts](https://github.com/devitools/cli/blob/v0.9.0/src/commands/env.ts)_
 
 ## `devi help [COMMAND]`
 
@@ -179,7 +198,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2
 
 ## `devi init`
 
-Initialize a directory to be recognized as a devitools project
+initialize a directory to be recognized as a devitools project
 
 ```
 USAGE
@@ -192,26 +211,37 @@ OPTIONS
 
 EXAMPLES
   $ devi init
-  $ devi init -s // init a project with just frontend
-  $ devi init -b // init a project with just backend
+  $ devi init -f | devi init --front // init a project with just frontend
+  $ devi init -b | devi init --back // init a project with just backend
 ```
 
-_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.9.0/src/commands/init.ts)_
 
-## `devi update`
+## `devi pull`
 
 update the devitools resources
 
 ```
 USAGE
-  $ devi update
+  $ devi pull
 
 OPTIONS
   -h, --help  show CLI help
 
 EXAMPLE
-  $ devi update
+  $ devi pull
 ```
 
-_See code: [src/commands/update.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/update.ts)_
+_See code: [src/commands/pull.ts](https://github.com/devitools/cli/blob/v0.9.0/src/commands/pull.ts)_
+
+## `devi update [CHANNEL]`
+
+update the devi CLI
+
+```
+USAGE
+  $ devi update [CHANNEL]
+```
+
+_See code: [@oclif/plugin-update](https://github.com/oclif/plugin-update/blob/v1.3.10/src/commands/update.ts)_
 <!-- commandsstop -->
