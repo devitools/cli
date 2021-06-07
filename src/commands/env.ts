@@ -3,8 +3,7 @@ import {flags} from '@oclif/command'
 import Base from '../helper/base'
 
 import * as Path from 'path'
-import * as FileSystem from 'fs'
-import {Back, Front} from '../definitions'
+import {Settings} from '../definitions'
 import cli from 'cli-ux'
 
 /**
@@ -59,12 +58,12 @@ export default class Env extends Base {
   }
 
   /**
-   * @param {Back} settings
+   * @param {Settings} settings
    * @param {string} username
    * @param {string} password
    */
-  async backend(settings: Back, username: string, password: string) {
-    const {env, root} = settings
+  async backend(settings: Settings, username: string, password: string) {
+    const {short, back: {env, root}} = settings
 
     const back = Path.resolve(process.cwd(), this.removeStartSlash(root))
     await this.replaceEnv(back, username, password)
@@ -86,7 +85,7 @@ export default class Env extends Base {
     try {
       const options = {cwd: back}
       const docker = (command: string) => this.execute(
-        `docker exec devitools-nginx bash -c "su -c '${command}' application"`,
+        `docker exec ${short}-nginx bash -c "su -c '${command}' application"`,
         options
       )
 
@@ -104,30 +103,36 @@ export default class Env extends Base {
     this.positive(`
       To run the backend in dev mode use
 
+        cd backend
         docker-compose up -d
     `)
   }
 
   /**
-   * @param {Front} settings
+   * @param {Settings} settings
    * @param {string} username
    * @param {string} password
    */
-  async frontend(settings: Front, username: string, password: string) {
-    const {env, root} = settings
+  async frontend(settings: Settings, username: string, password: string) {
+    const {env, root} = settings.front
 
     const front = Path.resolve(process.cwd(), this.removeStartSlash(root))
     await this.replaceEnv(front, username, password)
 
+    const options = {cwd: front}
     if (env === 'yarn') {
+      await this.execute('yarn', options)
+
       this.positive(`
         To run the frontend in dev mode use
 
+          cd frontend
           yarn dev
       `)
       return
     }
 
+    await this.execute('npm install', options)
     this.positive(`
         To run the frontend in dev mode use
 
@@ -148,17 +153,17 @@ export default class Env extends Base {
       return
     }
 
-    const username = await this.prompt('Type the username of root user', 'root@devi.tools')
-    const password = await this.prompt('Type the password of root user', 'aq1sw2de3')
+    const username = await this.prompt('Enter the username of the admin user', 'root@devi.tools')
+    const password = await this.prompt('Enter the password of the admin user', 'aq1sw2de3')
 
     if (settings.back.type) {
       this.disabled('Devitools "backend" detected')
-      await this.backend(settings.back, username, password)
+      await this.backend(settings, username, password)
     }
 
     if (settings.front.type) {
       this.disabled('Devitools "frontend" detected')
-      await this.frontend(settings.front, username, password)
+      await this.frontend(settings, username, password)
     }
 
     this.bye()

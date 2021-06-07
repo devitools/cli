@@ -40,7 +40,7 @@ export default class Create extends Base {
       name: 'repo',
       required: false,
       description: 'repository base to create the new project',
-      default: 'git@github.com:devitools/starter-kit.git',
+      default: 'https://github.com/devitools/starter-kit.git',
     },
   ]
 
@@ -77,7 +77,6 @@ export default class Create extends Base {
    */
   async run() {
     await this.welcome()
-
     const {args} = this.parse(Create)
     const folder = args.folder
 
@@ -100,25 +99,29 @@ export default class Create extends Base {
 
     cli.action.start('# downloading template', 'please wait', {stdout: true})
 
-    await this.execute(`git clone -b ${branch} ${repository} ${folder}`)
+    try {
+      await this.execute(`git clone --recursive -b ${branch} ${repository} ${folder}`)
 
-    const git = Path.resolve(pwd, '.git')
-    await unlink.sync(git)
+      const git = Path.resolve(pwd, '.git')
+      await unlink.sync(git)
 
-    this.update(pwd, name, short)
+      this.update(pwd, name, short)
 
-    const gitManager: SimpleGit = createSimpleGit(pwd)
-    await gitManager.init().add('.').commit('init')
+      const gitManager: SimpleGit = createSimpleGit(pwd)
+      await gitManager.init().add('.').commit('init')
+    } catch (error) {
+      this.error(error)
+    }
 
     cli.action.stop('all done')
 
     this.positive(`
-      To get started use
-
-        cd ${folder}
-
-      then follow the README.md instructions to start the development environment
-    `)
+        To get started use
+  
+          cd ${folder}
+  
+        then follow the README.md instructions to start the development environment
+      `)
 
     this.log(chalk.yellow('      optionally you can also use commands like "devi env" and "devi init" to do this'))
 
@@ -126,7 +129,6 @@ export default class Create extends Base {
     if (doc === 'yes') {
       open('https://github.com/devitools/starter-kit/tree/templates/laravel-quasar#-documenta%C3%A7%C3%A3o')
     }
-
     this.bye()
   }
 
