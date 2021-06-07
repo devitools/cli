@@ -8,19 +8,19 @@ import * as Path from 'path'
 import * as FileSystem from 'fs'
 
 /**
- * @class {Add}
+ * @class {Pull}
  */
-export default class Update extends Base {
+export default class Pull extends Base {
   /**
    * @type {string}
    */
-  static description = 'update the devitools resources'
+  static description = 'Update the devitools resources'
 
   /**
    * @type {string[]}
    */
   static examples = [
-    '$ devi update',
+    '$ devi pull',
   ]
 
   /**
@@ -44,8 +44,8 @@ export default class Update extends Base {
     const filename = Path.join(process.cwd(), '.devitools.json')
     const exists = await this.exists(filename)
     if (!exists) {
-      this.error('The project is not valid')
-      this.exit(2)
+      this.warn('The project is not valid')
+      this.bye()
       return
     }
 

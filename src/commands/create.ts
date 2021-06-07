@@ -8,6 +8,7 @@ import * as Path from 'path'
 
 import * as unlink from 'rimraf'
 import createSimpleGit, {SimpleGit} from 'simple-git'
+import * as chalk from 'chalk'
 
 /**
  * @class {Create}
@@ -16,7 +17,7 @@ export default class Create extends Base {
   /**
    * @type {string}
    */
-  static description = 'create a new devitools project'
+  static description = 'Create a new devitools project'
 
   /**
    * @type {string[]}
@@ -51,6 +52,28 @@ export default class Create extends Base {
   }
 
   /**
+   * @param {string} pwd
+   * @param {string} folder
+   * @return {Promise<boolean>}
+   */
+  async override(pwd: string, folder: string) {
+    const exists = await this.exists(pwd)
+    if (!exists) {
+      return true
+    }
+    const choices = [{name: 'Remove previous', value: 'remove'}, {name: 'Cancel', value: 'cancel'}]
+    const overwrite = await this.select(`The directory ${folder} already exists ('${pwd}')`, choices)
+    if (overwrite === 'cancel') {
+      return false
+    }
+
+    cli.action.start('# remove previous', 'removing', {stdout: true})
+    await unlink.sync(pwd)
+    cli.action.stop('all removed')
+    return true
+  }
+
+  /**
    */
   async run() {
     await this.welcome()
@@ -59,48 +82,45 @@ export default class Create extends Base {
     const folder = args.folder
 
     const pwd = Path.resolve(process.cwd(), folder)
-    const exists = await this.exists(pwd)
-    if (exists) {
-      const choices = [{name: 'Remove previous', value: 'remove'}, {name: 'Cancel', value: 'cancel'}]
-      const overwrite = await this.select(`The directory ${folder} already exists ('${pwd}')`, choices)
-      if (overwrite === 'cancel') {
-        this.bye()
-        return
-      }
-      cli.action.start('# remove previous', 'removing', {stdout: true})
-      unlink.sync(pwd)
-      cli.action.stop('all removed')
+    const override = await this.override(pwd, folder)
+    if (!override) {
+      this.bye()
+      return
     }
 
-    const choices = [
+    const name = await this.prompt('Project name', this.capitalize(folder))
+    const short = await this.prompt('Project short name', folder)
+
+    const templates = [
       {name: 'Laravel + Quasar', value: 'laravel-quasar'},
     ]
-    const template = await this.select('Which template do you want use?', choices)
-
+    const template = await this.select('Which template do you want use?', templates)
     const repository = args.repo
-
     const branch = `templates/${template}`
-    cli.action.start('# download template', 'downloading', {stdout: true})
 
-    try {
-      await this.execute(`git clone -b ${branch} ${repository} ${folder}`)
-      const git = Path.resolve(pwd, '.git')
-      unlink.sync(git)
-      const gitManager: SimpleGit = createSimpleGit(pwd)
-      await gitManager.init().add('.').commit('init')
-    } catch (error) {
-      this.error(error)
-    }
+    cli.action.start('# downloading template', 'please wait', {stdout: true})
+
+    await this.execute(`git clone -b ${branch} ${repository} ${folder}`)
+
+    const git = Path.resolve(pwd, '.git')
+    await unlink.sync(git)
+
+    this.update(pwd, name, short)
+
+    const gitManager: SimpleGit = createSimpleGit(pwd)
+    await gitManager.init().add('.').commit('init')
 
     cli.action.stop('all done')
 
     this.positive(`
-      To get started:
+      To get started use
 
         cd ${folder}
 
-      follow the README.md instructions to start the development environment
+      then follow the README.md instructions to start the development environment
     `)
+
+    this.log(chalk.yellow('      optionally you can also use commands like "devi env" and "devi init" to do this'))
 
     const doc = await this.select('Do you want to open the doc URL?', [{name: 'yes'}, {name: 'no'}])
     if (doc === 'yes') {
@@ -108,5 +128,41 @@ export default class Create extends Base {
     }
 
     this.bye()
+  }
+
+  /**
+   * @param {string} pwd
+   * @param {string} name
+   * @param {string} short
+   * @private
+   */
+  private async update(pwd: string, name: string, short: string) {
+    const files = [
+      '.environment/stage/docker-compose.yml',
+      '.tevun/hooks/install.sh',
+      '.tevun/hooks/setup.sh',
+
+      'frontend/public/statics/site.webmanifest',
+      'frontend/.env.defaults',
+      'frontend/.env.example',
+      'frontend/package.json',
+      'frontend/quasar.conf.js',
+
+      'backend/.env.defaults',
+      'backend/.env.example',
+      'backend/composer.json',
+      'backend/docker-compose.yml.example',
+      'backend/makefile',
+
+      '.devitools.json',
+    ]
+    for (const file of files) {
+      const filename = Path.resolve(pwd, file)
+      const string = String(this.readFile(filename))
+      const content = string
+      .replace(/replace\.app\.name/g, name)
+      .replace(/replace\.app\.short/g, short)
+      this.writeFile(filename, content)
+    }
   }
 }

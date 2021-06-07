@@ -9,6 +9,7 @@ import * as Handlebars from 'handlebars'
 import * as pluralize from 'pluralize'
 import * as inquirer from 'inquirer'
 import {QuestionCollection} from 'inquirer'
+import {Back, Front, Settings} from '../definitions'
 
 /**
  * @class {Base}
@@ -27,6 +28,20 @@ export default abstract class Base extends Command {
   async bye() {
     this.log('--')
     this.positive('# All done!')
+  }
+
+  /**
+   * @param {string} filename
+   * @return {Promise<{Settings} | undefined>}
+   */
+  async settings(filename: string): Promise<Settings | undefined> {
+    const exists = await this.exists(filename)
+    if (!exists) {
+      return
+    }
+
+    const content = FileSystem.readFileSync(filename)
+    return JSON.parse(String(content))
   }
 
   /**
@@ -112,6 +127,13 @@ export default abstract class Base extends Command {
   }
 
   /**
+   * @param input
+   */
+  removeStartSlash(input: string): string {
+    return input.replace(/^\//, '')
+  }
+
+  /**
    * @param {string} string
    * @param {Record<string, any>} replaces
    * @returns {string}
@@ -187,6 +209,38 @@ export default abstract class Base extends Command {
   }
 
   /**
+   * @param {string} filename
+   * @param {any} content
+   *
+   * @return {boolean}
+   */
+  async writeFileNoOverride(filename: string, content: any) {
+    const exists = await this.exists(filename)
+    if (!exists) {
+      return this.writeFile(filename, content)
+    }
+    const confirm = await this.confirm(`  File '${filename}' already exists. Override?`)
+    if (!confirm) {
+      return
+    }
+    return this.writeFile(filename, content)
+  }
+
+  /**
+   * @param {string} filename
+   *
+   * @return {Buffer|null}
+   */
+  readFile(filename: string) {
+    try {
+      return FileSystem.readFileSync(filename)
+    } catch (error) {
+      // silent
+    }
+    return null
+  }
+
+  /**
    * @param {string} message
    * @param {string | Record<string, unknown>} options
    *
@@ -223,7 +277,7 @@ export default abstract class Base extends Command {
   /**
    * @param {string} name
    * @param {string} message
-   * @param {string} choices
+   * @param {QuestionCollection} choices
    * @param {string} type
    * @return {Promise<any>}
    */
@@ -233,12 +287,24 @@ export default abstract class Base extends Command {
 
   /**
    * @param {string} message
-   * @param {string} choices
+   * @param {QuestionCollection} choices
    * @return {Promise<any>}
    */
   async select(message: string, choices: QuestionCollection) {
     const name = 'select'
     const type = 'list'
+    const selected = await inquirer.prompt([{name, message, type, choices}])
+    return selected[name]
+  }
+
+  /**
+   * @param {string} message
+   * @return {Promise<boolean>}
+   */
+  async confirm(message: string): Promise<boolean> {
+    const name = 'confirm'
+    const type = 'list'
+    const choices = [{name: 'yes', value: true}, {name: 'no', value: false}]
     const selected = await inquirer.prompt([{name, message, type, choices}])
     return selected[name]
   }
@@ -260,8 +326,9 @@ export default abstract class Base extends Command {
 
   /**
    * @param {string} command
+   * @param {*} options
    */
-  execute(command: string): Promise<string> {
+  execute(command: string, options = {}): Promise<string> {
     const exec = require('child_process').exec
 
     return new Promise((resolve, reject) => {
@@ -272,7 +339,7 @@ export default abstract class Base extends Command {
         }
         resolve(stdout)
       }
-      exec(command, handler)
+      exec(command, options, handler)
     })
   }
 
