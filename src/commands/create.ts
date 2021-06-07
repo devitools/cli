@@ -17,7 +17,7 @@ export default class Create extends Base {
   /**
    * @type {string}
    */
-  static description = 'Create a new devitools project'
+  static description = 'create a new devitools project'
 
   /**
    * @type {string[]}

@@ -14,7 +14,7 @@ export default class Pull extends Base {
   /**
    * @type {string}
    */
-  static description = 'Update the devitools resources'
+  static description = 'update the devitools resources'
 
   /**
    * @type {string[]}

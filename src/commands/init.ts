@@ -14,7 +14,7 @@ export default class Init extends Base {
   /**
    * @type {string}
    */
-  static description = 'Initialize a directory to be recognized as a devitools project'
+  static description = 'initialize a directory to be recognized as a devitools project'
 
   /**
    * @type {string}
