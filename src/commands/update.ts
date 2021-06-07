@@ -67,7 +67,7 @@ export default class Update extends Base {
 
     const {update} = await this.choose('update', 'Which one do you wanna update?', choices)
 
-    cli.action.start('cleaning up', 'waiting', {stdout: true})
+    cli.action.start('# cleaning up', 'waiting', {stdout: true})
     await this.execute('git submodule foreach --recursive git reset --hard')
     cli.action.stop('all clear')
 
@@ -75,7 +75,7 @@ export default class Update extends Base {
       const root = settings.front.root.split('/')
       root.shift()
       const frontend = root.join('/') + '/@devitools'
-      cli.action.start('updating frontend', 'waiting', {stdout: true})
+      cli.action.start('# updating frontend', 'waiting', {stdout: true})
       await this.execute(`git submodule update --remote --recursive "${frontend}"`)
       // eslint-disable-next-line no-warning-comments
       // TODO: review the strategy
@@ -88,12 +88,12 @@ export default class Update extends Base {
       const root = settings.back.root.split('/')
       root.shift()
       const backend = root.join('/') + '/@devitools'
-      cli.action.start('updating backend', 'waiting', {stdout: true})
+      cli.action.start('# updating backend', 'waiting', {stdout: true})
       await this.execute(`git submodule update --remote --recursive "${backend}"`)
     }
 
     if (update === 'both') {
-      cli.action.start('updating', 'waiting', {stdout: true})
+      cli.action.start('# updating', 'waiting', {stdout: true})
       await this.execute('git submodule update --remote --recursive')
     }
     cli.action.stop('all updated')

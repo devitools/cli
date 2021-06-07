@@ -18,7 +18,7 @@ export default abstract class Base extends Command {
    */
   async welcome() {
     await cli.url('@devitools', 'https://devi.tools')
-    await cli.annotation(chalk.green('# Welcome to devitools family!'), 'https://devi.tools')
+    await cli.annotation(chalk.green('✨ Welcome to devitools family!'), 'https://devi.tools')
     this.log('--')
   }
 
@@ -229,6 +229,18 @@ export default abstract class Base extends Command {
    */
   choose(name: string, message: string, choices: QuestionCollection, type = 'list') {
     return inquirer.prompt([{name, message, type, choices}])
+  }
+
+  /**
+   * @param {string} message
+   * @param {string} choices
+   * @return {Promise<any>}
+   */
+  async select(message: string, choices: QuestionCollection) {
+    const name = 'select'
+    const type = 'list'
+    const selected = await inquirer.prompt([{name, message, type, choices}])
+    return selected[name]
   }
 
   /**
