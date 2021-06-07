@@ -102,17 +102,11 @@ export default class Create extends Base {
     try {
       await this.execute(`git clone -b ${branch} ${repository} ${folder}`)
 
-      await unlink.sync(Path.resolve(pwd, '.git'))
-      await unlink.sync(Path.resolve(pwd, 'frontend/@devitools'))
-      await unlink.sync(Path.resolve(pwd, 'backend/@devitools'))
-
-      this.update(pwd, name, short)
-
       const git: SimpleGit = createSimpleGit(pwd)
       const script = Path.join(pwd, 'devitools.js')
       try {
         const installer = require(script)
-        await installer(this, git)
+        await installer(this, pwd, {name, short, git})
       } catch (error) {
         this.disabled(`~> The template '${template}' doesn't have an installer`)
       }
@@ -137,41 +131,5 @@ export default class Create extends Base {
       open('https://github.com/devitools/starter-kit/tree/templates/laravel-quasar#-documenta%C3%A7%C3%A3o')
     }
     this.bye()
-  }
-
-  /**
-   * @param {string} pwd
-   * @param {string} name
-   * @param {string} short
-   * @private
-   */
-  private async update(pwd: string, name: string, short: string) {
-    const files = [
-      '.environment/stage/docker-compose.yml',
-      '.tevun/hooks/install.sh',
-      '.tevun/hooks/setup.sh',
-
-      'frontend/public/statics/site.webmanifest',
-      'frontend/.env.defaults',
-      'frontend/.env.example',
-      'frontend/package.json',
-      'frontend/quasar.conf.js',
-
-      'backend/.env.defaults',
-      'backend/.env.example',
-      'backend/composer.json',
-      'backend/docker-compose.yml.example',
-      'backend/makefile',
-
-      '.devitools.json',
-    ]
-    for (const file of files) {
-      const filename = Path.resolve(pwd, file)
-      const string = String(this.readFile(filename))
-      const content = string
-      .replace(/replace\.app\.name/g, name)
-      .replace(/replace\.app\.short/g, short)
-      this.writeFile(filename, content)
-    }
   }
 }

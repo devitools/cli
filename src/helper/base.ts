@@ -9,7 +9,8 @@ import * as Handlebars from 'handlebars'
 import * as pluralize from 'pluralize'
 import * as inquirer from 'inquirer'
 import {QuestionCollection} from 'inquirer'
-import {Back, Front, Settings} from '../definitions'
+import {Settings} from '../definitions'
+import * as unlink from 'rimraf'
 
 /**
  * @class {Base}
@@ -234,6 +235,20 @@ export default abstract class Base extends Command {
   readFile(filename: string) {
     try {
       return FileSystem.readFileSync(filename)
+    } catch (error) {
+      // silent
+    }
+    return null
+  }
+
+  /**
+   * @param {string} path
+   *
+   * @return {Buffer|null}
+   */
+  unlink(path: string) {
+    try {
+      return unlink.sync(path)
     } catch (error) {
       // silent
     }
