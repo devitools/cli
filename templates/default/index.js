@@ -260,9 +260,10 @@ async function handleEntityBack(command, target, domain, entity, parameters, rep
     pad(date.getMinutes()) +
     pad(date.getSeconds())
 
+  const hyphenCase = collection.replace(/_/g, '-')
   replaces['entity.collection'] = collection
-  replaces['migration.file'] = `${timestamp}_${command.toDashCase(collection)}_create`
-  replaces['migration.class'] = `${command.toCamelCase(collection, true)}Create`
+  replaces['migration.file'] = `${timestamp}_${collection}-create`
+  replaces['migration.class'] = `${command.toCamelCase(hyphenCase, true)}Create`
 
   const generator = (namespace, filter = []) => {
     return command.generate(
