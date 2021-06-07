@@ -112,9 +112,9 @@ export default class Create extends Base {
       const script = Path.join(pwd, 'devitools.js')
       try {
         const installer = require(script)
-        installer(this, git)
+        await installer(this, git)
       } catch (error) {
-        this.disabled(`~> The template '${template}' doesn't have a installer`)
+        this.disabled(`~> The template '${template}' doesn't have an installer`)
       }
     } catch (error) {
       this.error(error)
