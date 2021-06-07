@@ -63,7 +63,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.7.1 win32-x64 node-v12.18.4
+@devitools/cli/0.8.0 win32-x64 node-v12.18.4
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -75,8 +75,10 @@ USAGE
 <!-- commands -->
 * [`devi add DOMAIN`](#devi-add-domain)
 * [`devi autocomplete [SHELL]`](#devi-autocomplete-shell)
+* [`devi create FOLDER [REPO]`](#devi-create-folder-repo)
 * [`devi help [COMMAND]`](#devi-help-command)
 * [`devi init`](#devi-init)
+* [`devi update`](#devi-update)
 
 ## `devi add DOMAIN`
 
@@ -112,7 +114,7 @@ EXAMPLES
      - devi add foo.bar -p={"foo":"bar"}
 ```
 
-_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.7.1/src/commands/add.ts)_
+_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -136,6 +138,27 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.2.1/src/commands/autocomplete/index.ts)_
+
+## `devi create FOLDER [REPO]`
+
+create a new devitools project
+
+```
+USAGE
+  $ devi create FOLDER [REPO]
+
+ARGUMENTS
+  FOLDER  [default: devitools] the name of the new project folder
+  REPO    [default: git@github.com:devitools/starter-kit.git] repository base to create the new project
+
+OPTIONS
+  -h, --help  show CLI help
+
+EXAMPLE
+  $ devi create <name>
+```
+
+_See code: [src/commands/create.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/create.ts)_
 
 ## `devi help [COMMAND]`
 
@@ -173,5 +196,22 @@ EXAMPLES
   $ devi init -b // init a project with just backend
 ```
 
-_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.7.1/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/init.ts)_
+
+## `devi update`
+
+update the devitools resources
+
+```
+USAGE
+  $ devi update
+
+OPTIONS
+  -h, --help  show CLI help
+
+EXAMPLE
+  $ devi update
+```
+
+_See code: [src/commands/update.ts](https://github.com/devitools/cli/blob/v0.8.0/src/commands/update.ts)_
 <!-- commandsstop -->
