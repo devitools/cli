@@ -100,22 +100,22 @@ export default class Create extends Base {
     cli.action.start('# downloading template', 'please wait', {stdout: true})
 
     try {
-      await this.execute(`git clone --recursive -b ${branch} ${repository} ${folder}`)
+      await this.execute(`git clone -b ${branch} ${repository} ${folder}`)
 
-      const git = Path.resolve(pwd, '.git')
-      await unlink.sync(git)
+      await unlink.sync(Path.resolve(pwd, '.git'))
+      await unlink.sync(Path.resolve(pwd, 'frontend/@devitools'))
+      await unlink.sync(Path.resolve(pwd, 'backend/@devitools'))
 
       this.update(pwd, name, short)
 
-      const gitManager: SimpleGit = createSimpleGit(pwd)
-      await gitManager
-      .init()
-      .add('.')
-      .commit('init')
-      .submoduleAdd('https://github.com/devitools/quasar', './frontend/@devitools')
-      .submoduleAdd('https://github.com/devitools/laravel', './backend/@devitools')
-      .add('.')
-      .commit('init')
+      const git: SimpleGit = createSimpleGit(pwd)
+      const script = Path.join(pwd, 'devitools.js')
+      try {
+        const installer = require(script)
+        installer(this, git)
+      } catch (error) {
+        this.disabled(`~> The template '${template}' doesn't have a installer`)
+      }
     } catch (error) {
       this.error(error)
     }
