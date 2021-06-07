@@ -121,7 +121,9 @@ export default class Env extends Base {
 
     const options = {cwd: front}
     if (env === 'yarn') {
+      cli.action.start('# configuring frontend', 'please wait', {stdout: true})
       await this.execute('yarn', options)
+      cli.action.stop('all done')
 
       this.positive(`
         To run the frontend in dev mode use
@@ -132,7 +134,9 @@ export default class Env extends Base {
       return
     }
 
+    cli.action.start('# configuring frontend', 'please wait', {stdout: true})
     await this.execute('npm install', options)
+    cli.action.stop('all done')
     this.positive(`
         To run the frontend in dev mode use
 

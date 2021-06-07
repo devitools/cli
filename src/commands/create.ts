@@ -108,7 +108,14 @@ export default class Create extends Base {
       this.update(pwd, name, short)
 
       const gitManager: SimpleGit = createSimpleGit(pwd)
-      await gitManager.init().add('.').commit('init')
+      await gitManager
+      .init()
+      .add('.')
+      .commit('init')
+      .submoduleAdd('https://github.com/devitools/quasar', './frontend/@devitools')
+      .submoduleAdd('https://github.com/devitools/laravel', './backend/@devitools')
+      .add('.')
+      .commit('init')
     } catch (error) {
       this.error(error)
     }
