@@ -81,7 +81,6 @@ export default class Env extends Base {
     const dockerComposerContent = this.readFile(Path.join(back, 'docker-compose.yml.example'))
     await this.writeFileNoOverride(dockerComposeFile, dockerComposerContent)
 
-    cli.action.start('# configuring backend', 'please wait', {stdout: true})
     try {
       const options = {cwd: back}
       const docker = (command: string) => this.execute(
@@ -89,16 +88,29 @@ export default class Env extends Base {
         options
       )
 
+      cli.action.start('# initializing containers', 'please wait', {stdout: true})
       await this.execute('docker-compose up -d', options)
+      cli.action.stop('containers running')
+
+      cli.action.start('# installing dependencies', 'please wait', {stdout: true})
       await docker('composer install')
+      cli.action.stop('dependencies installed')
+
+      cli.action.start('# generating keys', 'please wait', {stdout: true})
       await docker('php artisan key:generate')
       await docker('php artisan jwt:secret --force')
+      cli.action.stop('keys generated')
+
+      cli.action.start('# migration the database', 'please wait', {stdout: true})
       await docker('php artisan migrate:fresh')
+      cli.action.stop('database ready')
+
+      cli.action.start('# stopping containers', 'please wait', {stdout: true})
       await this.execute('docker-compose down', options)
+      cli.action.stop('containers stopped')
     } catch (error) {
       this.error(error)
     }
-    cli.action.stop('all done')
 
     this.positive(`
       To run the backend in dev mode use
