@@ -63,7 +63,7 @@ $ npm install -g @devitools/cli
 $ devi COMMAND
 running command...
 $ devi (-v|--version|version)
-@devitools/cli/0.10.0 win32-x64 node-v12.18.4
+@devitools/cli/0.11.0 linux-x64 node-v16.6.2
 $ devi --help [COMMAND]
 USAGE
   $ devi COMMAND
@@ -116,7 +116,7 @@ EXAMPLES
      - devi add foo.bar -p={"foo":"bar"}
 ```
 
-_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.10.0/src/commands/add.ts)_
+_See code: [src/commands/add.ts](https://github.com/devitools/cli/blob/v0.11.0/src/commands/add.ts)_
 
 ## `devi autocomplete [SHELL]`
 
@@ -160,7 +160,7 @@ EXAMPLE
   $ devi create <name>
 ```
 
-_See code: [src/commands/create.ts](https://github.com/devitools/cli/blob/v0.10.0/src/commands/create.ts)_
+_See code: [src/commands/create.ts](https://github.com/devitools/cli/blob/v0.11.0/src/commands/create.ts)_
 
 ## `devi env`
 
@@ -177,7 +177,7 @@ EXAMPLE
   $ devi env
 ```
 
-_See code: [src/commands/env.ts](https://github.com/devitools/cli/blob/v0.10.0/src/commands/env.ts)_
+_See code: [src/commands/env.ts](https://github.com/devitools/cli/blob/v0.11.0/src/commands/env.ts)_
 
 ## `devi help [COMMAND]`
 
@@ -215,7 +215,7 @@ EXAMPLES
   $ devi init -b | devi init --back // init a project with just backend
 ```
 
-_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.10.0/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/devitools/cli/blob/v0.11.0/src/commands/init.ts)_
 
 ## `devi pull`
 
@@ -232,7 +232,7 @@ EXAMPLE
   $ devi pull
 ```
 
-_See code: [src/commands/pull.ts](https://github.com/devitools/cli/blob/v0.10.0/src/commands/pull.ts)_
+_See code: [src/commands/pull.ts](https://github.com/devitools/cli/blob/v0.11.0/src/commands/pull.ts)_
 
 ## `devi update [CHANNEL]`
 
