@@ -162,7 +162,9 @@ export default class Add extends Base {
     const target = JSON.parse(String(content))
 
     const {args, flags} = this.parse(Add)
-    const fragments = String(args.domain).split('.')
+    const entry = String(args.domain)
+    const separator = entry.includes('.') ? '.' : '/'
+    const fragments = entry.split(separator)
     if (!flags.group && fragments.length <= 1) {
       this.error('The domain is not valid')
       this.exit(2)
