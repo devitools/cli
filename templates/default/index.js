@@ -151,7 +151,7 @@ async function handleEntityFront(command, target, domain, entity, parameters, re
   replaces['entity.plural'] = await command.prompt('  Plural label (ex.: People)', {required: true})
   replaces['entity.singular'] = await command.prompt('  Singular label (ex.: Person)', {required: true})
 
-  const filter = (parameters.builtin || parameters.array) ? [new RegExp('({{entity}}Schema|settings).*')] : []
+  const filter = (parameters.builtin || parameters.array) ? [new RegExp('({{entity}}Schema|settings|lang).*')] : []
 
   const generator = (namespace, filter = []) => {
     return command.generate(
